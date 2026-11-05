@@ -8,6 +8,7 @@ import {
   Percent,
   TrendingDown,
   ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 import { SimulationResult } from '../types';
 
@@ -82,17 +83,57 @@ export const PredictionView: React.FC<PredictionViewProps> = ({ onExportORSA }) 
     setGrowthPct(8);
   };
 
+  const [isGeneratingNarrative, setIsGeneratingNarrative] = useState(false);
+  const [scenarioNarrative, setScenarioNarrative] = useState<string | null>(null);
+  const [narrativeSource, setNarrativeSource] = useState<string | null>(null);
+
+  const handleGenerateAINarrative = async () => {
+    setIsGeneratingNarrative(true);
+    try {
+      const res = await fetch('/api/ai/scenario-narrative', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          weatherFactor: weatherIndex,
+          inflationFactor: inflationRate,
+          growthFactor: growthPct,
+          simulatedLoss: simResult.simulatedLossIncurred,
+          frequency: simResult.projectedFrequency,
+        }),
+      });
+      const data = await res.json();
+      setScenarioNarrative(data.narrative);
+      setNarrativeSource(data.source);
+    } catch (err) {
+      console.error('Failed to generate AI scenario narrative:', err);
+    } finally {
+      setIsGeneratingNarrative(false);
+    }
+  };
+
   return (
     <section className="space-y-4 sm:space-y-6">
       <div className="glass-card p-4 sm:p-5">
         <div className="border-b border-slate-200/70 pb-3 mb-4 sm:mb-5">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#00008b]">
-            Actuarial Loss Forecaster &amp; Scenario Simulator
-          </h2>
-          <p className="text-slate-600 text-xs sm:text-sm mt-0.5">
-            Simulate next month loss reserves under varying macro-economic and meteorological stress
-            conditions.
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-[#00008b]">
+                Actuarial Loss Forecaster &amp; Scenario Simulator
+              </h2>
+              <p className="text-slate-600 text-xs sm:text-sm mt-0.5">
+                Simulate next month loss reserves under varying macro-economic and meteorological stress
+                conditions.
+              </p>
+            </div>
+            <button
+              onClick={handleGenerateAINarrative}
+              disabled={isGeneratingNarrative}
+              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#00008b] to-blue-700 text-white text-xs font-semibold hover:opacity-95 transition shadow-2xs flex items-center gap-1.5 self-start sm:self-auto active:scale-[0.98]"
+            >
+              <Sparkles className={`w-3.5 h-3.5 ${isGeneratingNarrative ? 'animate-spin' : ''}`} />
+              <span>{isGeneratingNarrative ? 'Evaluating Models...' : 'AI Stress Assessment'}</span>
+            </button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
@@ -223,19 +264,37 @@ export const PredictionView: React.FC<PredictionViewProps> = ({ onExportORSA }) 
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-blue-50/75 border border-blue-200/90 text-xs text-slate-700 space-y-1">
-              <p className="font-bold text-[#00008b] flex items-center gap-1.5 text-xs">
-                <Calculator className="w-3.5 h-3.5 text-[#00008b]" />
-                Actuarial Reserve Recommendation:
-              </p>
-              <p className="text-[11px] text-slate-600 leading-relaxed">
-                Based on Monte Carlo iterations (N=10,000), capital buffer recommends maintaining{' '}
-                <strong className="text-slate-900">{simResult.recommendedBuffer}</strong> to satisfy
-                statutory NAIC/Solvency II thresholds.
-              </p>
-            </div>
+            {/* AI Generated Scenario Narrative (if requested) */}
+            {scenarioNarrative ? (
+              <div className="p-3.5 rounded-xl bg-gradient-to-br from-blue-50/90 to-indigo-50/70 border border-blue-200/90 text-xs text-slate-800 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between font-bold text-[#00008b] mb-1.5">
+                  <span className="flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-[#00008b]" />
+                    AI Actuarial Stress Evaluation
+                  </span>
+                  <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-blue-100 text-[#00008b] border border-blue-200">
+                    {narrativeSource === 'gemini-3.8-flash' ? 'Gemini 3.8 Flash' : 'Actuarial Model Engine'}
+                  </span>
+                </div>
+                <div className="text-[11px] text-slate-700 whitespace-pre-line leading-relaxed space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                  {scenarioNarrative}
+                </div>
+              </div>
+            ) : (
+              <div className="p-3.5 rounded-xl bg-blue-50/75 border border-blue-200/90 text-xs text-slate-700 space-y-1">
+                <p className="font-bold text-[#00008b] flex items-center gap-1.5 text-xs">
+                  <Calculator className="w-3.5 h-3.5 text-[#00008b]" />
+                  Actuarial Reserve Recommendation:
+                </p>
+                <p className="text-[11px] text-slate-600 leading-relaxed">
+                  Based on Monte Carlo iterations (N=10,000), capital buffer recommends maintaining{' '}
+                  <strong className="text-slate-900">{simResult.recommendedBuffer}</strong> to satisfy
+                  statutory NAIC/Solvency II thresholds.
+                </p>
+              </div>
+            )}
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={onExportORSA}
                 className="px-4 py-2 rounded-xl bg-[#00008b] hover:bg-[#000070] text-white text-xs font-bold transition shadow-sm flex items-center justify-center gap-1.5 w-full sm:w-auto"
@@ -243,6 +302,17 @@ export const PredictionView: React.FC<PredictionViewProps> = ({ onExportORSA }) 
                 <FileUp className="w-3.5 h-3.5" />
                 <span>Export Scenario Model to ORSA Filing</span>
               </button>
+
+              {!scenarioNarrative && (
+                <button
+                  onClick={handleGenerateAINarrative}
+                  disabled={isGeneratingNarrative}
+                  className="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:border-[#00008b] text-[#00008b] text-xs font-semibold transition flex items-center justify-center gap-1.5 w-full sm:w-auto"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{isGeneratingNarrative ? 'Analyzing...' : 'Run Copilot Commentary'}</span>
+                </button>
+              )}
             </div>
           </div>
         </div>

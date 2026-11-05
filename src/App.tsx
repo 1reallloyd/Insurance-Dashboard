@@ -53,14 +53,14 @@ export default function App() {
     auditLogs: [],
   });
 
-  // Initial Trend State
+  // Initial Trend State (FY 2026)
   const [trendData, setTrendData] = useState<TrendData>({
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+    labels: ['Jan 2026', 'Feb 2026', 'Mar 2026', 'Apr 2026', 'May 2026', 'Jun 2026', 'Jul 2026'],
     actual: [850, 920, 1020, 1100, 1150, 1200, 1248],
     predicted: [900, 950, 1050, 1120, 1180, 1230, 1290],
-    subtitle: 'Last 7 months actuarial volume',
-    label: 'Total Monthly Volume',
-    metric: '+46.8% since Jan baseline',
+    subtitle: '7-Month Actuarial Loss Development (FY 2026)',
+    label: 'Monthly Claims Volume (2026)',
+    metric: '+46.8% since Jan 2026 baseline',
   });
 
   // Claims List State
@@ -224,8 +224,8 @@ export default function App() {
           fraudCount={metrics.kpis.fraudCount}
         />
 
-        {/* Dynamic Main Viewport with Relative Scaling */}
-        <main className="flex-1 overflow-y-auto px-3.5 py-4 sm:px-6 sm:py-6">
+        {/* Dynamic Main Viewport with Relative Scaling & Balanced Density */}
+        <main className="flex-1 overflow-y-auto px-2.5 py-2.5 sm:px-4 sm:py-3.5 lg:px-5 lg:py-4">
           <div className="max-w-7xl mx-auto w-full">
             {currentView === 'dashboard' && (
               <DashboardView

@@ -131,17 +131,24 @@ export const FraudRadarView: React.FC<FraudRadarViewProps> = ({
 
         {/* Scan Results Banner (if available) */}
         {scanResult && (
-          <div className="mb-4 p-3.5 rounded-xl bg-blue-50/90 border border-blue-200 text-xs text-slate-800 animate-in fade-in duration-300">
-            <div className="flex items-center gap-1.5 font-bold text-[#00008b] mb-1">
-              <Sparkles className="w-4 h-4 text-[#00008b]" />
-              <span>AI Forensic Audit Completed</span>
-              <span className="text-[10px] text-slate-400 font-mono font-normal ml-auto">
-                {new Date().toLocaleTimeString()}
+          <div className="mb-4 p-3.5 rounded-xl bg-gradient-to-br from-blue-50/90 to-indigo-50/70 border border-blue-200 text-xs text-slate-800 animate-in fade-in duration-300">
+            <div className="flex items-center justify-between font-bold text-[#00008b] mb-1.5 flex-wrap gap-1">
+              <span className="flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-[#00008b]" />
+                AI Syndicate &amp; Forensic Audit Completed
               </span>
+              <div className="flex items-center gap-2">
+                <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-blue-100 text-[#00008b] border border-blue-200">
+                  {(scanResult as any).source === 'gemini-3.8-flash' ? 'Gemini 3.8 Flash' : 'SIU Rules Engine'}
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono font-normal">
+                  {new Date().toLocaleTimeString()}
+                </span>
+              </div>
             </div>
-            <p className="text-slate-700 text-[11.5px] whitespace-pre-line leading-relaxed">
+            <div className="text-slate-700 text-[11.5px] whitespace-pre-line leading-relaxed space-y-1.5 max-h-48 overflow-y-auto pr-1">
               {scanResult.summary}
-            </p>
+            </div>
           </div>
         )}
 

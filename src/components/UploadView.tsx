@@ -116,6 +116,26 @@ export const UploadView: React.FC<UploadViewProps> = ({ onDatasetUploaded }) => 
     }
   };
 
+  const [isAuditing, setIsAuditing] = useState(false);
+  const [auditResult, setAuditResult] = useState<{ text: string; source: string } | null>(null);
+
+  const handleRunAIAudit = async () => {
+    setIsAuditing(true);
+    try {
+      const res = await fetch('/api/ai/dataset-audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fileName: uploadedFileName || 'q3_casualty_loss_runs.csv' }),
+      });
+      const data = await res.json();
+      setAuditResult({ text: data.audit, source: data.source });
+    } catch (err) {
+      console.error('Failed to audit dataset with AI:', err);
+    } finally {
+      setIsAuditing(false);
+    }
+  };
+
   const handleSampleLoad = () => {
     simulateUploadProcess('sample_actuarial_loss_q3_iso20022.csv');
   };
@@ -139,14 +159,43 @@ export const UploadView: React.FC<UploadViewProps> = ({ onDatasetUploaded }) => 
             </p>
           </div>
 
-          <button
-            onClick={handleSampleLoad}
-            className="px-3.5 py-1.5 rounded-xl bg-white text-[#00008b] border border-blue-200/90 text-xs font-semibold hover:bg-blue-50 transition shadow-2xs flex items-center gap-1.5 self-start md:self-auto"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
-            <span>Load Q3 Sample Dataset</span>
-          </button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={handleRunAIAudit}
+              disabled={isAuditing}
+              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#00008b] to-indigo-700 text-white text-xs font-semibold hover:opacity-95 transition shadow-2xs flex items-center gap-1.5 active:scale-[0.98]"
+            >
+              <Sparkles className={`w-3.5 h-3.5 ${isAuditing ? 'animate-spin' : ''}`} />
+              <span>{isAuditing ? 'Auditing Loss Run...' : 'AI Dataset Audit'}</span>
+            </button>
+
+            <button
+              onClick={handleSampleLoad}
+              className="px-3.5 py-1.5 rounded-xl bg-white text-[#00008b] border border-blue-200/90 text-xs font-semibold hover:bg-blue-50 transition shadow-2xs flex items-center gap-1.5"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-blue-600" />
+              <span>Load Q3 Sample Dataset</span>
+            </button>
+          </div>
         </div>
+
+        {/* AI Audit Result Box (if generated) */}
+        {auditResult && (
+          <div className="mt-4 p-3.5 rounded-xl bg-gradient-to-br from-blue-50/90 to-indigo-50/70 border border-blue-200 text-xs text-slate-800 animate-in fade-in duration-200">
+            <div className="flex items-center justify-between font-bold text-[#00008b] mb-1.5">
+              <span className="flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#00008b]" />
+                AI Actuarial Dataset Integrity &amp; Loss Run Audit
+              </span>
+              <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-blue-100 text-[#00008b] border border-blue-200">
+                {auditResult.source === 'gemini-3.8-flash' ? 'Gemini 3.8 Flash' : 'Actuarial Audit Engine'}
+              </span>
+            </div>
+            <div className="text-[11px] text-slate-700 whitespace-pre-line leading-relaxed space-y-1.5 max-h-48 overflow-y-auto pr-1">
+              {auditResult.text}
+            </div>
+          </div>
+        )}
 
         {/* Drag and Drop Zone */}
         <div

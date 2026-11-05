@@ -77,14 +77,14 @@ export const ClaimsDistributionChart: React.FC<DistributionProps> = ({ onCategor
   }, [onCategoryClick]);
 
   return (
-    <div className="relative w-full h-56 sm:h-64 flex items-center justify-center">
+    <div className="relative w-full h-44 sm:h-48 flex items-center justify-center">
       <canvas ref={canvasRef} className="w-full h-full block" />
       <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-        <span className="text-xl sm:text-2xl font-extrabold text-[#00008b] tracking-tight tabular-nums">
+        <span className="text-base sm:text-lg font-bold text-[#00008b] tracking-tight tabular-nums">
           3,490
         </span>
-        <span className="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-wider font-semibold">
-          Total Policies
+        <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
+          Policies (2026)
         </span>
       </div>
     </div>
@@ -190,7 +190,7 @@ export const ClaimsTrendChart: React.FC<TrendChartProps> = ({ labels, data, labe
   }, [labels, data, labelName]);
 
   return (
-    <div className="relative w-full h-56 sm:h-64">
+    <div className="relative w-full h-44 sm:h-48">
       <canvas ref={canvasRef} className="w-full h-full block" />
     </div>
   );
@@ -292,7 +292,7 @@ export const ActualVsPredictedChart: React.FC<ComparisonChartProps> = ({
   }, [labels, actual, predicted]);
 
   return (
-    <div className="relative w-full h-56 sm:h-64">
+    <div className="relative w-full h-44 sm:h-48">
       <canvas ref={canvasRef} className="w-full h-full block" />
     </div>
   );

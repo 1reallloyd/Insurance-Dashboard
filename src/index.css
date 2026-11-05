@@ -42,58 +42,56 @@
 
 /* Frosted crystal glass cards with balanced hover */
 .glass-card {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.03), inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.9);
-  border-radius: 0.875rem;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 10px -1px rgba(15, 23, 42, 0.03), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+  border-radius: 0.65rem;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-card:hover {
-  background: rgba(255, 255, 255, 0.92);
-  box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.06), inset 0 1px 2px 0 rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 16px -2px rgba(15, 23, 42, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 1);
 }
 
-/* KPI Cards with subtle top or left border accents */
+/* KPI Cards with subtle hairline borders */
 .kpi-card-blue {
-  border-left: 3.5px solid #00008b;
+  border: 1px solid rgba(0, 0, 139, 0.15);
 }
 .kpi-card-red {
-  border-left: 3.5px solid #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.18);
 }
 .kpi-card-purple {
-  border-left: 3.5px solid #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.18);
 }
 .kpi-card-yellow {
-  border-left: 3.5px solid #eab308;
+  border: 1px solid rgba(234, 179, 8, 0.2);
 }
 
-/* Sidebar navigation item styling */
+/* Sidebar navigation item styling - high-density */
 .sidebar-nav-item {
   display: flex;
   align-items: center;
-  padding: 0.65rem 0.9rem;
-  border-radius: 0.65rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.5rem;
   color: #475569;
   font-weight: 500;
-  font-size: 0.85rem;
-  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
-  border-left: 2.5px solid transparent;
+  font-size: 0.8rem;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.15rem;
 }
 
 .sidebar-nav-item:hover:not(.active) {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.85);
   color: #00008b;
-  transform: translateX(2px);
+  transform: translateX(1px);
 }
 
 .sidebar-nav-item.active {
-  background: rgba(0, 0, 139, 0.07);
-  border-left: 2.5px solid #00008b;
+  background: rgba(0, 0, 139, 0.08);
   color: #00008b;
   font-weight: 600;
 }
