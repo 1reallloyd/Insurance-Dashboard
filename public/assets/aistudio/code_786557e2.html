@@ -1,0 +1,1730 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Insurance Analytics - Modern Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<!-- Chart.js with fallback safety -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Ambient soft luminous glass backdrop with subtle pastel refraction spheres */
+    .glass-bg {
+      background:
+        radial-gradient(circle at 12% 15%, rgba(59, 130, 246, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 88% 12%, rgba(147, 51, 234, 0.10) 0%, transparent 42%),
+        radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.07) 0%, transparent 55%),
+        radial-gradient(circle at 80% 85%, rgba(16, 185, 129, 0.09) 0%, transparent 45%),
+        radial-gradient(circle at 20% 90%, rgba(99, 102, 241, 0.08) 0%, transparent 40%),
+        #f1f5f9;
+      background-attachment: fixed;
+    }
+
+    /* Header & Base Glass Panels */
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+    }
+
+    /* Frosted crystal glass cards with glossy top specular highlight */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.74);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 8px 30px 0 rgba(31, 38, 135, 0.06), inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.95);
+      border-radius: 1rem;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .glass-card:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 14px 38px 0 rgba(31, 38, 135, 0.09), inset 0 1px 2px 0 rgba(255, 255, 255, 1);
+    }
+
+    /* KPI Cards customized with original border accents and glass refraction */
+    .kpi-card-blue {
+      border-left: 4px solid #00008b !important;
+    }
+    .kpi-card-red {
+      border-left: 4px solid #ef4444 !important;
+    }
+    .kpi-card-purple {
+      border-left: 4px solid #a855f7 !important;
+    }
+    .kpi-card-yellow {
+      border-left: 4px solid #eab308 !important;
+    }
+
+    /* Sidebar Navigation Item Styling with generous spacing */
+    .sidebar-nav-item {
+      display: flex;
+      align-items: center;
+      padding: 0.82rem 1.15rem;
+      border-radius: 0.85rem;
+      color: #334155;
+      font-weight: 500;
+      font-size: 0.925rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      border-left: 3px solid transparent;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+    }
+
+    .sidebar-nav-item:hover:not(.active) {
+      background-color: rgba(255, 255, 255, 0.65);
+      color: #00008b;
+      box-shadow: 0 2px 8px rgba(0, 0, 139, 0.04);
+    }
+
+    .sidebar-nav-item.active {
+      background: rgba(0, 0, 139, 0.08);
+      border-left: 3px solid #00008b;
+      color: #00008b;
+      font-weight: 600;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8);
+    }
+
+    .sidebar-nav-item.active i {
+      color: #00008b;
+    }
+
+    /* Guaranteed high-fidelity visible chart canvas containers */
+    .chart-box {
+      position: relative;
+      width: 100%;
+      height: 290px;
+      min-height: 280px;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(241, 245, 249, 0.5);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(148, 163, 184, 0.6);
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        z-index: 50;
+        height: 100vh;
+      }
+      .sidebar-open .sidebar {
+        transform: translateX(0);
+      }
+      .sidebar-overlay {
+        display: none;
+      }
+      .sidebar-open .sidebar-overlay {
+        display: block;
+        position: fixed;
+        inset: 0;
+        background-color: rgba(15, 23, 42, 0.35);
+        backdrop-filter: blur(6px);
+        z-index: 40;
+      }
+    }
+  </style>
+</head>
+<body class="glass-bg text-slate-800 min-h-screen overflow-x-hidden antialiased">
+<div class="app-container flex flex-col h-screen overflow-hidden">
+<!-- Frosted Glass Header -->
+<header class="glass-panel border-b border-white/60 py-3 px-6 flex items-center justify-between z-30 shrink-0 relative">
+<div class="flex items-center space-x-4">
+<button aria-label="Toggle Navigation" class="lg:hidden p-2 rounded-xl text-slate-600 hover:text-[#00008b] hover:bg-white/60 transition" id="mobile-menu-button">
+<i class="fas fa-bars text-xl"></i>
+</button>
+<div class="flex items-center space-x-3 cursor-pointer" onclick="switchView('dashboard')">
+<!-- IA Brand Mark with Deep Navy #00008b -->
+<div class="w-9 h-9 rounded-xl bg-[#00008b] flex items-center justify-center text-white font-bold text-sm shadow-sm ring-2 ring-white/60">
+          IA
+        </div>
+<div>
+<div class="flex items-center gap-2">
+<span class="text-xl font-bold tracking-tight text-[#00008b] hidden sm:inline">Insurance Analytics</span>
+<span class="px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase bg-blue-50/90 text-[#00008b] border border-blue-200/80 rounded-full shadow-xs">Pro v3.2</span>
+</div>
+<p class="text-[11px] text-slate-500 font-medium hidden md:block">Real-time Actuarial &amp; Claims Intelligence</p>
+</div>
+</div>
+</div>
+<!-- Search Bar with dynamic global filter -->
+<div class="hidden md:flex items-center bg-white/70 backdrop-blur-md border border-white/90 rounded-xl px-4 py-2 w-1/3 max-w-md transition-all focus-within:bg-white focus-within:ring-2 focus-within:ring-[#00008b]/20 shadow-xs">
+<i class="fas fa-search text-slate-400 mr-3 text-sm"></i>
+<input class="bg-transparent border-none outline-none w-full text-sm text-slate-800 placeholder-slate-400 focus:ring-0" id="globalSearchInput" oninput="handleGlobalSearch(this.value)" placeholder="Search datasets, claims, policy IDs (try 'auto' or 'fraud')..." type="text"/>
+<kbd class="hidden lg:inline-block text-[11px] font-mono px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 border border-slate-200 shadow-xs">⌘K</kbd>
+</div>
+<!-- Top Right Controls -->
+<div class="flex items-center space-x-4">
+<!-- Live Sync Status Pill -->
+<div class="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 text-xs font-semibold backdrop-blur-sm shadow-xs">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span>Live Sync</span>
+</div>
+<!-- Notification Bell with Red #ef4444 Badge & Dropdown -->
+<div class="relative">
+<button class="relative p-2 rounded-xl text-slate-600 hover:text-[#00008b] hover:bg-white/70 transition" id="notifBtn" onclick="toggleNotifications()">
+<i class="fas fa-bell text-lg"></i>
+<span class="absolute -top-1 -right-1 bg-[#ef4444] text-white text-[11px] font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-sm" id="notifBadge">3</span>
+</button>
+<!-- Dropdown Menu -->
+<div class="hidden absolute right-0 mt-3 w-80 sm:w-96 glass-panel rounded-2xl p-4 shadow-2xl border border-white/90 z-50" id="notifDropdown">
+<div class="flex items-center justify-between pb-3 border-b border-slate-200/80 mb-3">
+<span class="font-bold text-slate-900 text-sm">Actuarial Alerts</span>
+<button class="text-xs text-[#00008b] font-semibold hover:underline" onclick="clearNotifications()">Mark all read</button>
+</div>
+<div class="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+<div class="p-2.5 rounded-xl bg-red-50/80 border border-red-100/90 flex gap-3 text-xs">
+<i class="fas fa-triangle-exclamation text-[#ef4444] mt-0.5 text-sm"></i>
+<div>
+<p class="font-bold text-slate-900">Anomalous Loss Burst Flagged</p>
+<p class="text-slate-600 mt-0.5">3 clustered collision claims from Miami flagged for staged accident analysis.</p>
+<span class="text-[10px] text-slate-400 font-mono mt-1 block">12 mins ago</span>
+</div>
+</div>
+<div class="p-2.5 rounded-xl bg-blue-50/80 border border-blue-100 flex gap-3 text-xs">
+<i class="fas fa-database text-[#00008b] mt-0.5 text-sm"></i>
+<div>
+<p class="font-bold text-slate-900">Batch Q3 Loss Run Ingested</p>
+<p class="text-slate-600 mt-0.5">Auto &amp; Commercial policy loss triangulations recalculated.</p>
+<span class="text-[10px] text-slate-400 font-mono mt-1 block">45 mins ago</span>
+</div>
+</div>
+<div class="p-2.5 rounded-xl bg-emerald-50/80 border border-emerald-100 flex gap-3 text-xs">
+<i class="fas fa-check-double text-emerald-600 mt-0.5 text-sm"></i>
+<div>
+<p class="font-bold text-slate-900">Model Retrained Successfully</p>
+<p class="text-slate-600 mt-0.5">XGBoost Claims Predictor reached 99.8% precision score.</p>
+<span class="text-[10px] text-slate-400 font-mono mt-1 block">2 hours ago</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- User Profile with AU badge #00008b -->
+<div class="flex items-center space-x-2.5 cursor-pointer p-1.5 rounded-xl hover:bg-white/60 transition border border-transparent hover:border-white/80" onclick="switchView('settings')">
+<div class="w-8 h-8 rounded-xl bg-[#00008b] flex items-center justify-center text-white font-bold text-xs shadow-sm ring-1 ring-white/60">
+          AU
+        </div>
+<div class="hidden md:flex flex-col text-left">
+<span class="text-xs font-semibold text-slate-900 leading-tight">Admin User</span>
+<span class="text-[10px] text-slate-500 font-medium">Chief Actuary</span>
+</div>
+<i class="fas fa-chevron-down text-slate-400 text-xs ml-0.5"></i>
+</div>
+</div>
+</header>
+<!-- Main Workspace Container -->
+<div class="flex flex-1 overflow-hidden relative">
+<!-- Frosted Glass Sidebar with generous item spacing -->
+<aside class="sidebar glass-panel w-72 border-r border-white/60 transition-transform duration-300 ease-in-out shrink-0 flex flex-col justify-between z-30">
+<!-- Main Navigation Items -->
+<nav class="p-5 overflow-y-auto">
+<div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 px-3">
+          Core Analytics
+        </div>
+<ul class="space-y-1.5">
+<li>
+<div class="sidebar-nav-item active" data-nav="dashboard" onclick="switchView('dashboard')">
+<i class="fas fa-home w-6 text-center text-base mr-2"></i>
+<span class="flex-1">Dashboard Overview</span>
+</div>
+</li>
+<li>
+<div class="sidebar-nav-item" data-nav="upload" onclick="switchView('upload')">
+<i class="fas fa-upload w-6 text-center text-base mr-2 text-slate-400"></i>
+<span class="flex-1">Upload Dataset</span>
+<span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-100/70 text-[#00008b] font-mono font-bold border border-blue-200">NEW</span>
+</div>
+</li>
+<li>
+<div class="sidebar-nav-item" data-nav="claims" onclick="switchView('claims')">
+<i class="fas fa-file-invoice w-6 text-center text-base mr-2 text-slate-400"></i>
+<span class="flex-1">Claims Management</span>
+<span class="text-xs px-2 py-0.5 rounded-full bg-white/80 text-slate-600 font-mono font-medium border border-slate-200/80 shadow-xs">1,248</span>
+</div>
+</li>
+<li>
+<div class="sidebar-nav-item" data-nav="fraud" onclick="switchView('fraud')">
+<i class="fas fa-shield-alt w-6 text-center text-base mr-2 text-slate-400"></i>
+<span class="flex-1">Fraud Detection</span>
+<span class="text-xs px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-200/80 font-medium">87 Flagged</span>
+</div>
+</li>
+<li>
+<div class="sidebar-nav-item" data-nav="prediction" onclick="switchView('prediction')">
+<i class="fas fa-chart-line w-6 text-center text-base mr-2 text-slate-400"></i>
+<span class="flex-1">Claims Prediction</span>
+</div>
+</li>
+<li>
+<div class="sidebar-nav-item" data-nav="reports" onclick="switchView('reports')">
+<i class="fas fa-file-alt w-6 text-center text-base mr-2 text-slate-400"></i>
+<span class="flex-1">Reports &amp; Insights</span>
+</div>
+</li>
+</ul>
+<!-- Settings Section -->
+<div class="mt-7 pt-5 border-t border-slate-200/70">
+<div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3 px-3">
+            System &amp; Preferences
+          </div>
+<ul class="space-y-1.5">
+<li>
+<div class="sidebar-nav-item" data-nav="settings" onclick="switchView('settings')">
+<i class="fas fa-cog w-6 text-center text-base mr-2 text-slate-400"></i>
+<span class="flex-1">Settings</span>
+</div>
+</li>
+<li>
+<div class="sidebar-nav-item" data-nav="help" onclick="switchView('help')">
+<i class="fas fa-question-circle w-6 text-center text-base mr-2 text-slate-400"></i>
+<span class="flex-1">Help &amp; Support</span>
+</div>
+</li>
+</ul>
+</div>
+</nav>
+<!-- Bottom ML Model Performance Widget -->
+<div class="p-5 border-t border-white/60">
+<div class="p-3.5 rounded-xl bg-white/70 backdrop-blur-md border border-white/90 shadow-sm">
+<div class="flex items-center justify-between text-xs mb-1.5">
+<span class="text-slate-600 font-medium">ML Model Health</span>
+<span class="text-emerald-600 font-bold font-mono">99.8%</span>
+</div>
+<div class="w-full bg-slate-200/70 h-1.5 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-[#00008b] to-emerald-500 h-full w-[99.8%] rounded-full"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-slate-500 mt-2">
+<span>Latency: 28ms</span>
+<span class="text-[#00008b] font-semibold cursor-pointer hover:underline" onclick="switchView('prediction')">Audits</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Mobile Overlay -->
+<div class="sidebar-overlay"></div>
+<!-- MAIN DYNAMIC CONTENT CONTAINER (SPA VIEWS) -->
+<main class="flex-1 overflow-y-auto px-4 py-5 md:px-8 md:py-7 space-y-6">
+<!-- ==============================================
+           VIEW 1: DASHBOARD OVERVIEW (DEFAULT)
+      =============================================== -->
+<section class="space-y-6" id="view-dashboard">
+<!-- Welcome Banner Glass Card -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-6">
+<div>
+<div class="flex items-center gap-2.5 mb-1.5">
+<span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-xs flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> All Engines Operational
+              </span>
+<span class="text-xs text-slate-500" id="lastUpdatedTimestamp">Last updated: Just now</span>
+</div>
+<h1 class="text-2xl md:text-3xl font-bold text-[#00008b] tracking-tight">
+              Welcome, Admin User!
+            </h1>
+<p class="text-slate-600 text-sm mt-1">Here's a snapshot of your system's performance and actuarial pulse.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2.5 rounded-xl bg-white/80 hover:bg-white text-slate-700 hover:text-[#00008b] border border-white/90 text-xs font-semibold flex items-center gap-2 transition shadow-xs" onclick="refreshDashboardMetrics()">
+<i class="fas fa-arrows-rotate text-[#00008b]" id="refreshIcon"></i>
+<span>Refresh Metrics</span>
+</button>
+<button class="px-4 py-2.5 rounded-xl bg-[#00008b] hover:bg-[#000070] text-white text-xs font-semibold shadow-md shadow-blue-900/15 flex items-center gap-2 transition hover:scale-[1.01] active:scale-[0.99]" onclick="downloadReportModal()">
+<i class="fas fa-download"></i>
+<span>Export Actuarial PDF</span>
+</button>
+</div>
+</div>
+<!-- 4 KPI Cards with original Left Border Accents -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+<!-- KPI 1: Total Claims (#00008b) -->
+<div class="glass-card kpi-card-blue p-5 flex flex-col justify-between cursor-pointer" onclick="switchView('claims')">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h3 class="text-slate-500 font-medium text-xs uppercase tracking-wider">Total Claims</h3>
+<p class="text-xs text-slate-400">This month</p>
+</div>
+<div class="w-10 h-10 rounded-xl bg-blue-50/80 border border-blue-100 flex items-center justify-center text-[#00008b] shadow-xs">
+<i class="fas fa-file-invoice text-lg"></i>
+</div>
+</div>
+<div>
+<div class="text-3xl font-extrabold text-[#00008b] tracking-tight mb-2" id="kpiTotalClaims">1,248</div>
+<div class="flex items-center text-emerald-600 text-xs font-semibold">
+<i class="fas fa-arrow-up mr-1 text-[10px]"></i>
+<span>12% from last month</span>
+</div>
+</div>
+</div>
+<!-- KPI 2: Fraud Detected (#ef4444) -->
+<div class="glass-card kpi-card-red p-5 flex flex-col justify-between cursor-pointer" onclick="switchView('fraud')">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h3 class="text-slate-500 font-medium text-xs uppercase tracking-wider">Fraud Detected</h3>
+<p class="text-xs text-slate-400">Potential cases</p>
+</div>
+<div class="w-10 h-10 rounded-xl bg-red-50/80 border border-red-100 flex items-center justify-center text-[#ef4444] shadow-xs">
+<i class="fas fa-shield-alt text-lg"></i>
+</div>
+</div>
+<div>
+<div class="flex items-baseline gap-2 mb-2">
+<span class="text-3xl font-extrabold text-[#00008b] tracking-tight" id="kpiFraudCount">87</span>
+<span class="text-xs text-[#ef4444] font-bold">($1.48M saved)</span>
+</div>
+<div class="flex items-center text-emerald-600 text-xs font-semibold">
+<i class="fas fa-arrow-down mr-1 text-[10px]"></i>
+<span>5% from last month</span>
+</div>
+</div>
+</div>
+<!-- KPI 3: Predicted Claims (#a855f7) -->
+<div class="glass-card kpi-card-purple p-5 flex flex-col justify-between cursor-pointer" onclick="switchView('prediction')">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h3 class="text-slate-500 font-medium text-xs uppercase tracking-wider">Predicted Claims</h3>
+<p class="text-xs text-slate-400">Next month</p>
+</div>
+<div class="w-10 h-10 rounded-xl bg-purple-50/80 border border-purple-100 flex items-center justify-center text-[#a855f7] shadow-xs">
+<i class="fas fa-chart-bar text-lg"></i>
+</div>
+</div>
+<div>
+<div class="text-3xl font-extrabold text-[#00008b] tracking-tight mb-2">1,415</div>
+<div class="flex items-center text-emerald-600 text-xs font-semibold">
+<i class="fas fa-arrow-up mr-1 text-[10px]"></i>
+<span>8% from last month</span>
+</div>
+</div>
+</div>
+<!-- KPI 4: Risk Score (#eab308) -->
+<div class="glass-card kpi-card-yellow p-5 flex flex-col justify-between cursor-pointer" onclick="switchView('fraud')">
+<div class="flex justify-between items-start mb-3">
+<div>
+<h3 class="text-slate-500 font-medium text-xs uppercase tracking-wider">Risk Score</h3>
+<p class="text-xs text-slate-400">Overall system</p>
+</div>
+<div class="w-10 h-10 rounded-xl bg-amber-50/80 border border-amber-100 flex items-center justify-center text-[#eab308] shadow-xs">
+<i class="fas fa-exclamation-circle text-lg"></i>
+</div>
+</div>
+<div>
+<div class="flex items-baseline gap-2 mb-2">
+<span class="text-3xl font-extrabold text-[#00008b] tracking-tight">6.8</span>
+<span class="text-xs text-slate-400 font-semibold">/ 10</span>
+</div>
+<div class="flex items-center text-slate-500 text-xs font-semibold">
+<i class="fas fa-equals mr-1 text-[10px]"></i>
+<span>No change</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Charts Section Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Chart 1: Claims Distribution (Doughnut Chart) -->
+<div class="lg:col-span-5 glass-card p-6 flex flex-col justify-between">
+<div class="flex justify-between items-center mb-4">
+<div>
+<h3 class="text-base font-bold text-[#00008b] tracking-tight">Claims Distribution</h3>
+<p class="text-xs text-slate-500 mt-0.5">By category breakdown</p>
+</div>
+<span class="text-xs font-mono font-bold text-[#00008b] bg-blue-50/90 px-2.5 py-1 rounded-lg border border-blue-200/80 shadow-xs">
+                Total: $34.8M
+              </span>
+</div>
+<!-- Chart box with reliable sizing -->
+<div class="chart-box flex items-center justify-center">
+<canvas class="w-full h-full block" id="claimsDistributionChart"></canvas>
+<!-- Center Doughnut Label -->
+<div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+<span class="text-2xl font-bold text-[#00008b] leading-tight">3,490</span>
+<span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Total Policies</span>
+</div>
+</div>
+<!-- Original Category Breakdown Badges -->
+<div class="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-slate-200/70 text-xs">
+<div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/70 border border-white/90 shadow-xs cursor-pointer hover:bg-white" onclick="filterDistribution('Auto')">
+<span class="w-2.5 h-2.5 rounded-full bg-[#00008b] shadow-xs"></span>
+<span class="text-slate-600">Auto <strong class="text-slate-900 ml-1">35%</strong></span>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/70 border border-white/90 shadow-xs cursor-pointer hover:bg-white" onclick="filterDistribution('Home')">
+<span class="w-2.5 h-2.5 rounded-full bg-[#3b82f6] shadow-xs"></span>
+<span class="text-slate-600">Home <strong class="text-slate-900 ml-1">25%</strong></span>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/70 border border-white/90 shadow-xs cursor-pointer hover:bg-white" onclick="filterDistribution('Health')">
+<span class="w-2.5 h-2.5 rounded-full bg-[#10b981] shadow-xs"></span>
+<span class="text-slate-600">Health <strong class="text-slate-900 ml-1">20%</strong></span>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/70 border border-white/90 shadow-xs cursor-pointer hover:bg-white" onclick="filterDistribution('Life')">
+<span class="w-2.5 h-2.5 rounded-full bg-[#f59e0b] shadow-xs"></span>
+<span class="text-slate-600">Life <strong class="text-slate-900 ml-1">15%</strong></span>
+</div>
+<div class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-white/70 border border-white/90 shadow-xs cursor-pointer hover:bg-white" onclick="filterDistribution('Biz')">
+<span class="w-2.5 h-2.5 rounded-full bg-[#ef4444] shadow-xs"></span>
+<span class="text-slate-600">Biz <strong class="text-slate-900 ml-1">5%</strong></span>
+</div>
+<div class="flex items-center justify-center text-[11px] text-[#00008b] font-bold cursor-pointer hover:underline" onclick="switchView('claims')">
+                View Drilldown →
+              </div>
+</div>
+</div>
+<!-- Chart 2: Claims Trend (100% VISIBLE & FUNCTIONAL) -->
+<div class="lg:col-span-7 glass-card p-6 flex flex-col justify-between">
+<div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+<div>
+<h3 class="text-base font-bold text-[#00008b] tracking-tight">Claims Trend</h3>
+<p class="text-xs text-slate-500 mt-0.5" id="trendSubtitle">Last 7 months actuarial volume</p>
+</div>
+<div class="flex items-center bg-white/80 backdrop-blur-md p-1 rounded-xl border border-white/90 text-xs shadow-xs">
+<button class="px-3 py-1 rounded-lg bg-[#00008b] text-white font-semibold transition shadow-xs" id="trendBtn-monthly" onclick="updateTrendGranularity('monthly')">Monthly</button>
+<button class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition font-medium" id="trendBtn-weekly" onclick="updateTrendGranularity('weekly')">Weekly</button>
+<button class="px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition font-medium" id="trendBtn-quarterly" onclick="updateTrendGranularity('quarterly')">Quarterly</button>
+</div>
+</div>
+<!-- Canvas Container with explicit height to guarantee rendering -->
+<div class="chart-box">
+<canvas class="w-full h-full block" id="claimsTrendChart"></canvas>
+</div>
+<div class="flex items-center justify-between text-xs text-slate-500 pt-3 border-t border-slate-200/70 mt-2">
+<span class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-[#00008b] ring-2 ring-blue-200"></span>
+<span class="font-medium text-slate-700" id="trendDatasetLabel">Total Monthly Volume</span>
+</span>
+<span class="text-emerald-600 font-mono font-bold" id="trendChangeMetric">+46.8% since Jan baseline</span>
+</div>
+</div>
+</div>
+<!-- Chart 3: Actual vs Predicted Claims (Grouped Bar Chart) -->
+<div class="glass-card p-6">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+<div>
+<h3 class="text-base font-bold text-[#00008b] tracking-tight">Actual vs Predicted Claims</h3>
+<p class="text-xs text-slate-500 mt-0.5">Actuarial predictive model comparison</p>
+</div>
+<div class="flex items-center gap-4 text-xs">
+<div class="flex items-center gap-2 bg-white/70 px-2.5 py-1 rounded-lg border border-white/80 shadow-xs">
+<span class="w-3 h-3 rounded-md bg-[#00008b]"></span>
+<span class="text-slate-700 font-semibold">Actual Claims</span>
+</div>
+<div class="flex items-center gap-2 bg-white/70 px-2.5 py-1 rounded-lg border border-white/80 shadow-xs">
+<span class="w-3 h-3 rounded-md bg-[#3b82f6]"></span>
+<span class="text-slate-700 font-semibold">Predicted Claims</span>
+</div>
+</div>
+</div>
+<div class="chart-box" style="height: 310px;">
+<canvas class="w-full h-full block" id="actualVsPredictedChart"></canvas>
+</div>
+</div>
+<!-- Recent Activity Section -->
+<div class="glass-card p-6">
+<div class="flex items-center justify-between mb-5">
+<div>
+<h3 class="text-base font-bold text-[#00008b] tracking-tight">Recent Activity</h3>
+<p class="text-xs text-slate-500 mt-0.5">System audit and intake events</p>
+</div>
+<button class="text-xs font-bold text-[#00008b] hover:underline transition" onclick="switchView('reports')">View All Logs →</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Event 1 -->
+<div class="p-4 rounded-xl bg-white/70 backdrop-blur-md border border-white/90 hover:bg-white/90 transition flex items-start space-x-3.5 shadow-xs cursor-pointer" onclick="switchView('upload')">
+<div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#00008b] shrink-0">
+<i class="fas fa-file-upload text-sm"></i>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-semibold text-slate-900 truncate">New dataset uploaded</p>
+<p class="text-xs text-slate-500 truncate">Auto claims data for Q3 2023</p>
+<span class="inline-block text-[11px] font-mono text-slate-400 mt-1">2 hours ago</span>
+</div>
+</div>
+<!-- Event 2 -->
+<div class="p-4 rounded-xl bg-white/70 backdrop-blur-md border border-white/90 hover:bg-white/90 transition flex items-start space-x-3.5 shadow-xs cursor-pointer" onclick="switchView('fraud')">
+<div class="w-10 h-10 rounded-xl bg-red-50 border border-red-100 flex items-center justify-center text-[#ef4444] shrink-0">
+<i class="fas fa-shield-alt text-sm"></i>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-semibold text-slate-900 truncate">Potential fraud detected</p>
+<p class="text-xs text-slate-500 truncate">Claim #CA-2023-1245</p>
+<span class="inline-block text-[11px] font-mono text-slate-400 mt-1">5 hours ago</span>
+</div>
+</div>
+<!-- Event 3 -->
+<div class="p-4 rounded-xl bg-white/70 backdrop-blur-md border border-white/90 hover:bg-white/90 transition flex items-start space-x-3.5 shadow-xs cursor-pointer" onclick="switchView('settings')">
+<div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+<i class="fas fa-check-circle text-sm"></i>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-semibold text-slate-900 truncate">System update completed</p>
+<p class="text-xs text-slate-500 truncate">Version 2.3.1 installed</p>
+<span class="inline-block text-[11px] font-mono text-slate-400 mt-1">Yesterday</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ==============================================
+           VIEW 2: UPLOAD DATASET
+      =============================================== -->
+<section class="hidden space-y-6" id="view-upload">
+<div class="glass-card p-6">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/70 pb-4">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-100 text-[#00008b]">Dataset Ingestion Engine</span>
+<span class="text-xs text-slate-400">Schema: Actuarial ISO 20022</span>
+</div>
+<h2 class="text-2xl font-bold text-[#00008b]">Upload Actuarial Datasets</h2>
+<p class="text-slate-600 text-sm mt-0.5">Ingest claims loss runs, exposure matrices, and telematics logs for ML inference.</p>
+</div>
+<button class="px-4 py-2 rounded-xl bg-white text-[#00008b] border border-blue-200 text-xs font-bold hover:bg-blue-50 transition shadow-xs" onclick="loadSampleDataset()">
+<i class="fas fa-magic mr-1.5"></i> Load Q3 Sample Dataset
+            </button>
+</div>
+<!-- Drag and drop zone -->
+<div class="mt-6 border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center transition-all bg-white/40 cursor-pointer hover:border-[#00008b]" id="dropZone" ondragleave="this.classList.remove('border-[#00008b]', 'bg-blue-50/50')" ondragover="event.preventDefault(); this.classList.add('border-[#00008b]', 'bg-blue-50/50')" ondrop="handleFileDrop(event)">
+<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-blue-50 text-[#00008b] flex items-center justify-center text-2xl shadow-inner">
+<i class="fas fa-cloud-arrow-up"></i>
+</div>
+<h4 class="text-base font-bold text-slate-800">Drag &amp; Drop insurance records (.CSV, .XLSX, .PARQUET)</h4>
+<p class="text-xs text-slate-500 mt-1">Maximum batch file size: 120MB per upload session</p>
+<input accept=".csv,.xlsx,.parquet" class="hidden" id="fileUploadInput" onchange="handleFileSelect(event)" type="file"/>
+<button class="mt-4 px-5 py-2.5 rounded-xl bg-[#00008b] text-white text-xs font-semibold hover:bg-blue-900 transition shadow-md" onclick="document.getElementById('fileUploadInput').click()">
+              Browse Files from Computer
+            </button>
+</div>
+<!-- Upload Progress indicator (simulated) -->
+<div class="hidden mt-6 p-4 rounded-xl bg-white/80 border border-white/90" id="uploadProgressContainer">
+<div class="flex items-center justify-between text-xs font-semibold text-slate-700 mb-2">
+<span id="uploadFileName">batch_auto_claims_2023_Q3.csv</span>
+<span class="text-[#00008b] font-mono" id="uploadPercent">0%</span>
+</div>
+<div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+<div class="bg-[#00008b] h-full w-0 transition-all duration-300" id="uploadProgressBar"></div>
+</div>
+<p class="text-[11px] text-slate-500 mt-1" id="uploadStatusText">Validating column schemas against Actuarial Loss Model...</p>
+</div>
+<!-- Dataset Schema Preview -->
+<div class="mt-6">
+<div class="flex items-center justify-between mb-3">
+<h4 class="text-sm font-bold text-[#00008b] uppercase tracking-wider">Preview Ingested Records (Last 4 Rows)</h4>
+<span class="text-xs text-emerald-600 font-semibold"><i class="fas fa-circle-check mr-1"></i> Schema Validated</span>
+</div>
+<div class="overflow-x-auto rounded-xl border border-white/90 bg-white/70">
+<table class="w-full text-left text-xs text-slate-700">
+<thead class="bg-slate-100/80 text-slate-600 font-semibold uppercase text-[11px]">
+<tr>
+<th class="p-3">Claim ID</th>
+<th class="p-3">Line of Business</th>
+<th class="p-3">Incident Date</th>
+<th class="p-3">Incurred Loss</th>
+<th class="p-3">Deductible</th>
+<th class="p-3">Telematics Score</th>
+<th class="p-3">Validation</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-200/70 font-mono">
+<tr>
+<td class="p-3 font-bold text-[#00008b]">#CLM-98214</td>
+<td class="p-3 font-sans">Commercial Auto</td>
+<td class="p-3">2023-10-18</td>
+<td class="p-3">$14,800.00</td>
+<td class="p-3">$1,000.00</td>
+<td class="p-3 text-emerald-600">89 / 100</td>
+<td class="p-3 font-sans"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">Passed</span></td>
+</tr>
+<tr>
+<td class="p-3 font-bold text-[#00008b]">#CLM-98215</td>
+<td class="p-3 font-sans">Homeowners Fire</td>
+<td class="p-3">2023-10-19</td>
+<td class="p-3">$82,450.00</td>
+<td class="p-3">$2,500.00</td>
+<td class="p-3 text-slate-400">N/A</td>
+<td class="p-3 font-sans"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">Passed</span></td>
+</tr>
+<tr>
+<td class="p-3 font-bold text-[#00008b]">#CLM-98216</td>
+<td class="p-3 font-sans">Personal Auto</td>
+<td class="p-3">2023-10-21</td>
+<td class="p-3">$6,120.00</td>
+<td class="p-3">$500.00</td>
+<td class="p-3 text-amber-600">42 / 100</td>
+<td class="p-3 font-sans"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700">Check Telematics</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<!-- ==============================================
+           VIEW 3: CLAIMS MANAGEMENT
+      =============================================== -->
+<section class="hidden space-y-6" id="view-claims">
+<div class="glass-card p-6">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+<div>
+<h2 class="text-2xl font-bold text-[#00008b] tracking-tight">Claims Management &amp; Adjudication</h2>
+<p class="text-slate-600 text-sm">Review, investigate, and approve active insurance claims across all lines.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs text-slate-500">Filter Status:</span>
+<button class="claims-tab-btn active px-3 py-1.5 rounded-lg bg-[#00008b] text-white text-xs font-semibold" onclick="filterClaimsTable('all')">All (1,248)</button>
+<button class="claims-tab-btn px-3 py-1.5 rounded-lg bg-white/80 hover:bg-white text-slate-700 text-xs font-semibold" onclick="filterClaimsTable('Approved')">Approved</button>
+<button class="claims-tab-btn px-3 py-1.5 rounded-lg bg-white/80 hover:bg-white text-slate-700 text-xs font-semibold" onclick="filterClaimsTable('Review')">In Review</button>
+<button class="claims-tab-btn px-3 py-1.5 rounded-lg bg-white/80 hover:bg-white text-rose-600 text-xs font-semibold" onclick="filterClaimsTable('Flagged')">Flagged (87)</button>
+</div>
+</div>
+<!-- Claims Search & Actions bar -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
+<div class="relative w-full sm:w-80">
+<i class="fas fa-search absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+<input class="w-full pl-9 pr-3 py-2 text-xs bg-white/80 border border-white/90 rounded-xl focus:ring-2 focus:ring-[#00008b]/20 outline-none" id="claimsSearchInput" onkeyup="filterClaimsSearch(this.value)" placeholder="Search claim #, policyholder, type..."/>
+</div>
+<div class="text-xs text-slate-500 font-medium">
+              Showing <span class="font-bold text-slate-900" id="claimsVisibleCount">6</span> claims
+            </div>
+</div>
+<!-- Claims Table -->
+<div class="overflow-x-auto rounded-xl border border-white/90 bg-white/70">
+<table class="w-full text-left text-xs text-slate-700" id="claimsTable">
+<thead class="bg-slate-100/90 text-slate-600 font-semibold uppercase text-[11px] border-b border-slate-200">
+<tr>
+<th class="p-3.5">Claim ID</th>
+<th class="p-3.5">Policyholder</th>
+<th class="p-3.5">Policy Line</th>
+<th class="p-3.5">Claim Amount</th>
+<th class="p-3.5">Fraud Risk</th>
+<th class="p-3.5">Status</th>
+<th class="p-3.5 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-200/70" id="claimsTableBody">
+<tr class="claim-row hover:bg-white/80 transition" data-id="CLM-1082" data-status="Review">
+<td class="p-3.5 font-bold font-mono text-[#00008b]">#CLM-1082</td>
+<td class="p-3.5 font-semibold text-slate-900">Eleanor Vance</td>
+<td class="p-3.5">Auto Collision</td>
+<td class="p-3.5 font-mono font-bold">$12,450</td>
+<td class="p-3.5"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-[#eab308] border border-amber-200">Moderate (54%)</span></td>
+<td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-100/80 text-[#00008b]">In Review</span></td>
+<td class="p-3.5 text-right">
+<button class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:border-[#00008b] text-[#00008b] font-semibold text-[11px]" onclick="openClaimModal('CLM-1082', 'Eleanor Vance', '$12,450', 'Auto Collision', 'Review')">Inspect</button>
+</td>
+</tr>
+<tr class="claim-row hover:bg-white/80 transition" data-id="CLM-1083" data-status="Flagged">
+<td class="p-3.5 font-bold font-mono text-[#00008b]">#CLM-1083</td>
+<td class="p-3.5 font-semibold text-slate-900">Marcus Sterling</td>
+<td class="p-3.5">Commercial Fire</td>
+<td class="p-3.5 font-mono font-bold text-red-600">$185,000</td>
+<td class="p-3.5"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-50 text-[#ef4444] border border-rose-200">Critical (92%)</span></td>
+<td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-100/80 text-rose-700">Flagged</span></td>
+<td class="p-3.5 text-right">
+<button class="px-2.5 py-1 rounded-lg bg-rose-500 hover:bg-rose-600 text-white font-semibold text-[11px]" onclick="openClaimModal('CLM-1083', 'Marcus Sterling', '$185,000', 'Commercial Fire', 'Flagged')">Investigate</button>
+</td>
+</tr>
+<tr class="claim-row hover:bg-white/80 transition" data-id="CLM-1084" data-status="Approved">
+<td class="p-3.5 font-bold font-mono text-[#00008b]">#CLM-1084</td>
+<td class="p-3.5 font-semibold text-slate-900">Sophia Lin</td>
+<td class="p-3.5">Health Surgical</td>
+<td class="p-3.5 font-mono font-bold">$4,850</td>
+<td class="p-3.5"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">Low (8%)</span></td>
+<td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700">Approved</span></td>
+<td class="p-3.5 text-right">
+<button class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:border-[#00008b] text-[#00008b] font-semibold text-[11px]" onclick="openClaimModal('CLM-1084', 'Sophia Lin', '$4,850', 'Health Surgical', 'Approved')">Inspect</button>
+</td>
+</tr>
+<tr class="claim-row hover:bg-white/80 transition" data-id="CLM-1085" data-status="Approved">
+<td class="p-3.5 font-bold font-mono text-[#00008b]">#CLM-1085</td>
+<td class="p-3.5 font-semibold text-slate-900">David Reynolds</td>
+<td class="p-3.5">Home Windstorm</td>
+<td class="p-3.5 font-mono font-bold">$9,200</td>
+<td class="p-3.5"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200">Low (12%)</span></td>
+<td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700">Approved</span></td>
+<td class="p-3.5 text-right">
+<button class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:border-[#00008b] text-[#00008b] font-semibold text-[11px]" onclick="openClaimModal('CLM-1085', 'David Reynolds', '$9,200', 'Home Windstorm', 'Approved')">Inspect</button>
+</td>
+</tr>
+<tr class="claim-row hover:bg-white/80 transition" data-id="CLM-1086" data-status="Flagged">
+<td class="p-3.5 font-bold font-mono text-[#00008b]">#CLM-1086</td>
+<td class="p-3.5 font-semibold text-slate-900">Lucas Henderson</td>
+<td class="p-3.5">Auto Theft</td>
+<td class="p-3.5 font-mono font-bold text-red-600">$54,000</td>
+<td class="p-3.5"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-rose-50 text-[#ef4444] border border-rose-200">High (88%)</span></td>
+<td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-100/80 text-rose-700">Flagged</span></td>
+<td class="p-3.5 text-right">
+<button class="px-2.5 py-1 rounded-lg bg-rose-500 hover:bg-rose-600 text-white font-semibold text-[11px]" onclick="openClaimModal('CLM-1086', 'Lucas Henderson', '$54,000', 'Auto Theft', 'Flagged')">Investigate</button>
+</td>
+</tr>
+<tr class="claim-row hover:bg-white/80 transition" data-id="CLM-1087" data-status="Review">
+<td class="p-3.5 font-bold font-mono text-[#00008b]">#CLM-1087</td>
+<td class="p-3.5 font-semibold text-slate-900">Catherine Ward</td>
+<td class="p-3.5">Life Benefit</td>
+<td class="p-3.5 font-mono font-bold">$250,000</td>
+<td class="p-3.5"><span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-50 text-[#eab308] border border-amber-200">Moderate (48%)</span></td>
+<td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-100/80 text-[#00008b]">In Review</span></td>
+<td class="p-3.5 text-right">
+<button class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:border-[#00008b] text-[#00008b] font-semibold text-[11px]" onclick="openClaimModal('CLM-1087', 'Catherine Ward', '$250,000', 'Life Benefit', 'Review')">Inspect</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- ==============================================
+           VIEW 4: FRAUD DETECTION RADAR
+      =============================================== -->
+<section class="hidden space-y-6" id="view-fraud">
+<div class="glass-card p-6">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-[#ef4444]">Neural Syndicate Radar v2</span>
+<span class="text-xs text-slate-400">87 Flagged In Suspense</span>
+</div>
+<h2 class="text-2xl font-bold text-[#00008b] tracking-tight">AI Fraud Detection &amp; Forensic Audit</h2>
+<p class="text-slate-600 text-sm">Automated pattern matching, duplicate collision rings, and ghost clinic detection.</p>
+</div>
+<button class="px-4 py-2.5 rounded-xl bg-[#ef4444] hover:bg-red-700 text-white text-xs font-bold shadow-md shadow-red-500/20 flex items-center gap-2 transition" onclick="runFraudScan()">
+<i class="fas fa-radar" id="radarSpinIcon"></i> Run Full Forensic Scan
+            </button>
+</div>
+<!-- Fraud metric breakdown -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+<div class="p-4 rounded-xl bg-red-50/80 border border-red-200/90">
+<span class="text-xs text-red-600 font-semibold uppercase">Loss Prevention Prevented</span>
+<div class="text-2xl font-extrabold text-[#ef4444] mt-1">$1,482,900</div>
+<p class="text-[11px] text-slate-600 mt-1">Saved across 87 intercepted false claims this month.</p>
+</div>
+<div class="p-4 rounded-xl bg-purple-50/80 border border-purple-200/90">
+<span class="text-xs text-[#a855f7] font-semibold uppercase">Organized Syndicate Rings</span>
+<div class="text-2xl font-extrabold text-[#a855f7] mt-1">3 Rings Identified</div>
+<p class="text-[11px] text-slate-600 mt-1">Recurrent bodily injury clinics identified in South FL &amp; NJ.</p>
+</div>
+<div class="p-4 rounded-xl bg-blue-50/80 border border-blue-200/90">
+<span class="text-xs text-[#00008b] font-semibold uppercase">False Positive Rate</span>
+<div class="text-2xl font-extrabold text-[#00008b] mt-1">0.42%</div>
+<p class="text-[11px] text-slate-600 mt-1">Validated by third-party Special Investigation Unit.</p>
+</div>
+</div>
+<!-- Highlighted High Risk Cases -->
+<h4 class="text-sm font-bold text-[#00008b] uppercase tracking-wider mb-3">Priority Interception Queue</h4>
+<div class="space-y-3">
+<div class="p-4 rounded-xl bg-white/80 border border-red-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-xl bg-red-100 text-[#ef4444] flex items-center justify-center font-bold text-base shrink-0">
+<i class="fas fa-user-secret"></i>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-bold text-slate-900 text-sm">Marcus Sterling - Claim #CA-2023-1245</span>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-red-100 text-red-700">92% Risk Score</span>
+</div>
+<p class="text-xs text-slate-600 mt-1">Reason: Vehicle VIN reported in 3 simultaneous collision claims within 48 hours across separate jurisdictions.</p>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<button class="px-3 py-1.5 rounded-lg bg-[#ef4444] hover:bg-red-700 text-white font-bold text-xs transition" onclick="freezeDisbursement('Claim #CA-2023-1245')">Freeze Payout</button>
+<button class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold text-xs hover:bg-slate-50 transition" onclick="openClaimModal('CA-2023-1245', 'Marcus Sterling', '$185,000', 'Commercial Fire', 'Flagged')">SIU Dossier</button>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-white/80 border border-amber-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-start gap-3.5">
+<div class="w-10 h-10 rounded-xl bg-amber-100 text-[#eab308] flex items-center justify-center font-bold text-base shrink-0">
+<i class="fas fa-stethoscope"></i>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-bold text-slate-900 text-sm">Sunrise Physical Therapy Corp - Batch Claims (14)</span>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800">79% Risk Score</span>
+</div>
+<p class="text-xs text-slate-600 mt-1">Reason: Excessive billing codes for duplicate soft-tissue ultrasound treatments without prior clinical referral.</p>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<button class="px-3 py-1.5 rounded-lg bg-[#ef4444] hover:bg-red-700 text-white font-bold text-xs transition" onclick="freezeDisbursement('Batch #SPT-9921')">Hold Billing</button>
+<button class="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 font-semibold text-xs hover:bg-slate-50 transition" onclick="alert('Audit dossier dispatched to Compliance team.')">Details</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ==============================================
+           VIEW 5: CLAIMS PREDICTION SIMULATOR
+      =============================================== -->
+<section class="hidden space-y-6" id="view-prediction">
+<div class="glass-card p-6">
+<div class="border-b border-slate-200/70 pb-4 mb-6">
+<h2 class="text-2xl font-bold text-[#00008b]">Actuarial Loss Forecaster &amp; Scenario Simulator</h2>
+<p class="text-slate-600 text-sm">Simulate next month loss reserves under varying macro-economic and meteorological stress conditions.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Controls / Sliders -->
+<div class="lg:col-span-5 space-y-5 bg-white/60 p-5 rounded-2xl border border-white/90">
+<h4 class="text-sm font-bold text-[#00008b] uppercase tracking-wider">Actuarial Stress Parameters</h4>
+<!-- Slider 1 -->
+<div>
+<div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+<span>Weather Catastrophe Severity Index</span>
+<span class="font-mono text-[#00008b] font-bold" id="valWeather">1.2x (Normal)</span>
+</div>
+<input class="w-full accent-[#00008b] cursor-pointer" id="inputWeather" max="3.0" min="0.5" oninput="updatePredictionSim()" step="0.1" type="range" value="1.2"/>
+</div>
+<!-- Slider 2 -->
+<div>
+<div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+<span>Medical &amp; Parts Inflation Rate</span>
+<span class="font-mono text-[#00008b] font-bold" id="valInflation">4.5%</span>
+</div>
+<input class="w-full accent-[#00008b] cursor-pointer" id="inputInflation" max="15.0" min="1.0" oninput="updatePredictionSim()" step="0.5" type="range" value="4.5"/>
+</div>
+<!-- Slider 3 -->
+<div>
+<div class="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+<span>Policy Exposure Growth (New Bindings)</span>
+<span class="font-mono text-[#00008b] font-bold" id="valGrowth">+8%</span>
+</div>
+<input class="w-full accent-[#00008b] cursor-pointer" id="inputGrowth" max="30" min="-10" oninput="updatePredictionSim()" step="1" type="range" value="8"/>
+</div>
+<div class="pt-3 border-t border-slate-200">
+<button class="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition" onclick="resetSim()">Reset Simulation Defaults</button>
+</div>
+</div>
+<!-- Simulated Projections Output -->
+<div class="lg:col-span-7 flex flex-col justify-between space-y-4">
+<div class="grid grid-cols-2 gap-4">
+<div class="glass-panel p-4 rounded-xl">
+<span class="text-xs text-slate-500 font-semibold">Simulated Loss Incurred</span>
+<div class="text-3xl font-extrabold text-[#00008b] mt-1" id="simIncurredLoss">$37.2M</div>
+<span class="text-[11px] text-emerald-600 font-bold" id="simLossDiff">+6.9% vs Baseline Target</span>
+</div>
+<div class="glass-panel p-4 rounded-xl">
+<span class="text-xs text-slate-500 font-semibold">Projected Claim Frequency</span>
+<div class="text-3xl font-extrabold text-[#00008b] mt-1" id="simFrequency">1,415</div>
+<span class="text-[11px] text-slate-500" id="simFreqDiff">Expected next month</span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-blue-50/70 border border-blue-200/90 text-xs text-slate-700 space-y-1">
+<p class="font-bold text-[#00008b]"><i class="fas fa-calculator mr-1.5"></i> Actuarial Reserve Recommendation:</p>
+<p>Based on Monte Carlo iterations (N=10,000), capital buffer recommends maintaining <strong>$41.5M in liquid reinsurance retention</strong> to satisfy statutory solvency thresholds.</p>
+</div>
+<button class="px-5 py-2.5 rounded-xl bg-[#00008b] hover:bg-blue-900 text-white text-xs font-bold transition shadow-md w-full sm:w-auto" onclick="alert('Forecast exported to Enterprise Risk Management (ERM) system!')">
+<i class="fas fa-file-export mr-1.5"></i> Export Scenario Model to ORSA Filing
+              </button>
+</div>
+</div>
+</div>
+</section>
+<!-- ==============================================
+           VIEW 6: REPORTS & INSIGHTS
+      =============================================== -->
+<section class="hidden space-y-6" id="view-reports">
+<div class="glass-card p-6">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200/70 pb-4 mb-6">
+<div>
+<h2 class="text-2xl font-bold text-[#00008b]">Actuarial Reports &amp; Insights Repository</h2>
+<p class="text-slate-600 text-sm">Download pre-audited statutory filings, executive board decks, and loss triangles.</p>
+</div>
+<div class="flex items-center gap-2">
+<select class="text-xs bg-white/80 border border-white/90 rounded-xl px-3 py-2 text-slate-700 outline-none">
+<option>Year-to-Date (2023)</option>
+<option>Q3 Comprehensive</option>
+<option>Q2 Retrospective</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+<!-- Report Card 1 -->
+<div class="p-5 rounded-2xl bg-white/80 border border-white/90 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-xl bg-blue-50 text-[#00008b] flex items-center justify-center text-lg mb-3">
+<i class="fas fa-file-pdf"></i>
+</div>
+<h4 class="font-bold text-slate-900 text-sm">Q3 Actuarial Solvency Report</h4>
+<p class="text-xs text-slate-500 mt-1">Comprehensive capital adequacy, loss reserve triangles, and risk metrics.</p>
+<div class="flex items-center gap-2 mt-3 text-[11px] text-slate-400 font-mono">
+<span>PDF • 14.8 MB</span>
+<span>• Oct 2023</span>
+</div>
+</div>
+<button class="mt-4 w-full py-2 rounded-xl bg-[#00008b] hover:bg-blue-900 text-white text-xs font-semibold transition" onclick="downloadReportModal('Q3 Actuarial Solvency Report')">
+<i class="fas fa-download mr-1"></i> Download PDF
+              </button>
+</div>
+<!-- Report Card 2 -->
+<div class="p-5 rounded-2xl bg-white/80 border border-white/90 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-xl bg-red-50 text-[#ef4444] flex items-center justify-center text-lg mb-3">
+<i class="fas fa-shield-virus"></i>
+</div>
+<h4 class="font-bold text-slate-900 text-sm">Fraud Interception &amp; SIU Audit</h4>
+<p class="text-xs text-slate-500 mt-1">Detailed forensics on 87 flagged claims with syndicate graphs.</p>
+<div class="flex items-center gap-2 mt-3 text-[11px] text-slate-400 font-mono">
+<span>PDF • 8.2 MB</span>
+<span>• Oct 2023</span>
+</div>
+</div>
+<button class="mt-4 w-full py-2 rounded-xl bg-slate-800 hover:bg-black text-white text-xs font-semibold transition" onclick="downloadReportModal('Fraud Interception &amp; SIU Audit')">
+<i class="fas fa-download mr-1"></i> Download Report
+              </button>
+</div>
+<!-- Report Card 3 -->
+<div class="p-5 rounded-2xl bg-white/80 border border-white/90 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg mb-3">
+<i class="fas fa-file-excel"></i>
+</div>
+<h4 class="font-bold text-slate-900 text-sm">Raw Actuarial Loss Run Dump</h4>
+<p class="text-xs text-slate-500 mt-1">Raw tabular dataset with policy numbers, bodily injury, and property damage.</p>
+<div class="flex items-center gap-2 mt-3 text-[11px] text-slate-400 font-mono">
+<span>CSV • 42.1 MB</span>
+<span>• Live Sync</span>
+</div>
+</div>
+<button class="mt-4 w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition" onclick="downloadReportModal('Raw Actuarial Loss Run Dump')">
+<i class="fas fa-download mr-1"></i> Download CSV
+              </button>
+</div>
+</div>
+</div>
+</section>
+<!-- ==============================================
+           VIEW 7: SETTINGS
+      =============================================== -->
+<section class="hidden space-y-6" id="view-settings">
+<div class="glass-card p-6">
+<div class="border-b border-slate-200/70 pb-4 mb-6">
+<h2 class="text-2xl font-bold text-[#00008b]">System Configuration &amp; Actuarial Engine</h2>
+<p class="text-slate-600 text-sm">Configure threshold sensitivity, ML API keys, and notification triggers.</p>
+</div>
+<div class="space-y-6 max-w-2xl">
+<!-- Setting 1 -->
+<div class="flex items-center justify-between p-4 rounded-xl bg-white/70 border border-white/90">
+<div>
+<h4 class="text-sm font-bold text-slate-900">Fraud Auto-Flagging Sensitivity Threshold</h4>
+<p class="text-xs text-slate-500 mt-0.5">Claims with anomaly confidence above this number are instantly locked from settlement.</p>
+</div>
+<select class="text-xs font-mono font-bold bg-slate-100 border-none rounded-lg px-3 py-1.5 text-[#00008b]">
+<option>85% (Strict)</option>
+<option selected="">75% (Standard)</option>
+<option>65% (Sensitive)</option>
+</select>
+</div>
+<!-- Setting 2 -->
+<div class="flex items-center justify-between p-4 rounded-xl bg-white/70 border border-white/90">
+<div>
+<h4 class="text-sm font-bold text-slate-900">Live Telematics Sync</h4>
+<p class="text-xs text-slate-500 mt-0.5">Stream real-time vehicular telemetry into the loss triangle pipeline.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00008b]"></div>
+</label>
+</div>
+<!-- Setting 3 -->
+<div class="flex items-center justify-between p-4 rounded-xl bg-white/70 border border-white/90">
+<div>
+<h4 class="text-sm font-bold text-slate-900">Actuarial Loss Triangulation Method</h4>
+<p class="text-xs text-slate-500 mt-0.5">Algorithm applied to unresolved long-tail claims reserving.</p>
+</div>
+<select class="text-xs font-semibold bg-slate-100 border-none rounded-lg px-3 py-1.5 text-slate-800">
+<option>Chain Ladder (Mack Model)</option>
+<option>Bornhuetter-Ferguson</option>
+<option>Cape Cod Method</option>
+</select>
+</div>
+<div class="pt-4 flex gap-3">
+<button class="px-5 py-2.5 rounded-xl bg-[#00008b] text-white text-xs font-bold hover:bg-blue-900 transition shadow-md" onclick="alert('Preferences successfully saved!')">
+                Save System Settings
+              </button>
+<button class="px-5 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition" onclick="alert('Defaults restored')">
+                Reset Defaults
+              </button>
+</div>
+</div>
+</div>
+</section>
+<!-- ==============================================
+           VIEW 8: HELP & SUPPORT
+      =============================================== -->
+<section class="hidden space-y-6" id="view-help">
+<div class="glass-card p-6">
+<div class="border-b border-slate-200/70 pb-4 mb-6">
+<h2 class="text-2xl font-bold text-[#00008b]">Help, Documentation &amp; Actuarial Knowledge Base</h2>
+<p class="text-slate-600 text-sm">Find answers on reserve calculation algorithms, ISO standards, and platform usage.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Accordion / FAQs -->
+<div class="space-y-3">
+<h4 class="text-sm font-bold text-[#00008b] uppercase tracking-wider">Frequently Asked Questions</h4>
+<div class="p-4 rounded-xl bg-white/80 border border-white/90 cursor-pointer" onclick="this.querySelector('.faq-ans').classList.toggle('hidden')">
+<div class="flex justify-between items-center font-bold text-xs text-slate-900">
+<span>How does the Claims Trend chart calculate monthly volume?</span>
+<i class="fas fa-chevron-down text-slate-400"></i>
+</div>
+<p class="faq-ans hidden text-xs text-slate-600 mt-2">The claims trend aggregates all bound and filed notices of loss across Auto, Home, Health, and Commercial categories using timestamped ISO transaction feeds.</p>
+</div>
+<div class="p-4 rounded-xl bg-white/80 border border-white/90 cursor-pointer" onclick="this.querySelector('.faq-ans').classList.toggle('hidden')">
+<div class="flex justify-between items-center font-bold text-xs text-slate-900">
+<span>What criteria flags a claim for fraud?</span>
+<i class="fas fa-chevron-down text-slate-400"></i>
+</div>
+<p class="faq-ans hidden text-xs text-slate-600 mt-2">An ensemble model checks VIN duplicates, geo-spatial collision anomalies, telematics shock sensor discrepancies, and provider medical billing clustering.</p>
+</div>
+<div class="p-4 rounded-xl bg-white/80 border border-white/90 cursor-pointer" onclick="this.querySelector('.faq-ans').classList.toggle('hidden')">
+<div class="flex justify-between items-center font-bold text-xs text-slate-900">
+<span>Can I export reports into my core policy system?</span>
+<i class="fas fa-chevron-down text-slate-400"></i>
+</div>
+<p class="faq-ans hidden text-xs text-slate-600 mt-2">Yes, our REST API supports automatic export directly to Guidewire ClaimCenter, Duck Creek, and custom SQL databases.</p>
+</div>
+</div>
+<!-- Support Ticket -->
+<div class="p-5 rounded-2xl bg-white/70 border border-white/90">
+<h4 class="text-sm font-bold text-[#00008b] uppercase tracking-wider mb-3">Submit Priority Support Ticket</h4>
+<form class="space-y-3" onsubmit="event.preventDefault(); alert('Ticket submitted to Actuarial IT Support! Case #TIC-9912 generated.'); this.reset();">
+<div>
+<label class="text-xs font-semibold text-slate-700 block mb-1">Issue Category</label>
+<select class="w-full text-xs rounded-xl border border-slate-200 bg-white p-2">
+<option>Model Discrepancy</option>
+<option>Data Ingestion Failure</option>
+<option>User Permission / Access</option>
+</select>
+</div>
+<div>
+<label class="text-xs font-semibold text-slate-700 block mb-1">Description</label>
+<textarea class="w-full text-xs rounded-xl border border-slate-200 bg-white p-2.5 focus:ring-2 focus:ring-[#00008b]/20 outline-none" placeholder="Describe the behavior or dataset anomaly..." required="" rows="3"></textarea>
+</div>
+<button class="w-full py-2.5 rounded-xl bg-[#00008b] text-white text-xs font-bold hover:bg-blue-900 transition shadow-sm" type="submit">
+                  Send Ticket to Actuarial IT
+                </button>
+</form>
+</div>
+</div>
+</div>
+</section>
+</main>
+</div>
+</div>
+<!-- ==============================================
+     MODALS & INTERACTIVE POPUPS
+=============================================== -->
+<!-- Claim Inspection Modal -->
+<div class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm" id="claimModal">
+<div class="glass-panel w-full max-w-lg rounded-2xl p-6 shadow-2xl border border-white/90 relative">
+<button class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg" onclick="closeClaimModal()">
+<i class="fas fa-xmark"></i>
+</button>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-100 text-[#00008b]" id="modalClaimIdBadge">#CLM-1082</span>
+<span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800" id="modalStatusBadge">In Review</span>
+</div>
+<h3 class="text-xl font-bold text-slate-900" id="modalClaimant">Eleanor Vance</h3>
+<p class="text-xs text-slate-500 mb-4" id="modalLine">Auto Collision • Incurred Loss</p>
+<div class="p-4 rounded-xl bg-white/80 border border-slate-200/80 mb-4 space-y-2 text-xs">
+<div class="flex justify-between">
+<span class="text-slate-500">Claim Amount:</span>
+<span class="font-bold font-mono text-slate-900" id="modalAmount">$12,450</span>
+</div>
+<div class="flex justify-between">
+<span class="text-slate-500">Adjuster Assigned:</span>
+<span class="font-medium text-slate-800">Robert Vance (Senior Examiner)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-slate-500">Forensic Risk Score:</span>
+<span class="font-bold text-emerald-600">Within acceptable tolerance</span>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm" onclick="alert('Claim Approved! Reserve ledger updated.'); closeClaimModal();">
+        Approve Claim
+      </button>
+<button class="flex-1 py-2.5 rounded-xl bg-[#ef4444] hover:bg-red-700 text-white text-xs font-bold transition shadow-sm" onclick="alert('Escalated to SIU Fraud Investigation division.'); closeClaimModal();">
+        Escalate to SIU
+      </button>
+</div>
+</div>
+</div>
+<!-- Generic Export Report Toast/Modal -->
+<div class="hidden fixed bottom-6 right-6 z-50 glass-panel p-4 rounded-2xl border border-white/90 shadow-2xl flex items-center gap-3" id="reportToast">
+<div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
+<i class="fas fa-check"></i>
+</div>
+<div>
+<h5 class="text-xs font-bold text-slate-900">Actuarial Report Generated</h5>
+<p class="text-[11px] text-slate-500" id="reportToastText">Document successfully compiled and downloaded.</p>
+</div>
+</div>
+<script>
+  // Global Chart instances to allow seamless live updates
+  let distChartInstance = null;
+  let trendChartInstance = null;
+  let actPredChartInstance = null;
+
+  // Trend dataset store for toggles
+  const trendDataConfigs = {
+    monthly: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+      data: [850, 920, 1020, 1100, 1150, 1200, 1248],
+      subtitle: 'Last 7 months actuarial volume',
+      label: 'Total Monthly Volume',
+      metric: '+46.8% since Jan baseline'
+    },
+    weekly: {
+      labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7'],
+      data: [275, 290, 310, 305, 330, 345, 362],
+      subtitle: 'Last 7 weeks incident intake velocity',
+      label: 'Total Weekly Volume',
+      metric: '+31.6% trajectory vs target'
+    },
+    quarterly: {
+      labels: ['Q1 2022', 'Q2 2022', 'Q3 2022', 'Q4 2022', 'Q1 2023', 'Q2 2023', 'Q3 2023'],
+      data: [2400, 2650, 2900, 3100, 3250, 3400, 3663],
+      subtitle: 'Trailing quarterly multi-line loss development',
+      label: 'Total Quarterly Volume',
+      metric: '+52.6% over 24-month horizon'
+    }
+  };
+
+  // Switch SPA views
+  function switchView(viewName) {
+    // 1. Update navigation active state
+    document.querySelectorAll('.sidebar-nav-item').forEach(item => {
+      if (item.getAttribute('data-nav') === viewName) {
+        item.classList.add('active');
+        const icon = item.querySelector('i');
+        if (icon) icon.classList.remove('text-slate-400');
+      } else {
+        item.classList.remove('active');
+        const icon = item.querySelector('i');
+        if (icon) icon.classList.add('text-slate-400');
+      }
+    });
+
+    // 2. Hide all view sections
+    const views = ['dashboard', 'upload', 'claims', 'fraud', 'prediction', 'reports', 'settings', 'help'];
+    views.forEach(v => {
+      const el = document.getElementById('view-' + v);
+      if (el) el.classList.add('hidden');
+    });
+
+    // 3. Show target view
+    const targetEl = document.getElementById('view-' + viewName);
+    if (targetEl) {
+      targetEl.classList.remove('hidden');
+    }
+
+    // 4. Close mobile menu if open
+    document.querySelector('.app-container').classList.remove('sidebar-open');
+
+    // 5. If returning to dashboard, trigger chart resize to guarantee pixel perfection
+    if (viewName === 'dashboard') {
+      setTimeout(() => {
+        if (trendChartInstance) trendChartInstance.resize();
+        if (distChartInstance) distChartInstance.resize();
+        if (actPredChartInstance) actPredChartInstance.resize();
+      }, 50);
+    }
+  }
+
+  // Mobile drawer support
+  const mobileBtn = document.getElementById('mobile-menu-button');
+  const appContainer = document.querySelector('.app-container');
+  const overlay = document.querySelector('.sidebar-overlay');
+
+  if (mobileBtn) {
+    mobileBtn.addEventListener('click', function() {
+      appContainer.classList.toggle('sidebar-open');
+    });
+  }
+
+  if (overlay) {
+    overlay.addEventListener('click', function() {
+      appContainer.classList.remove('sidebar-open');
+    });
+  }
+
+  // Notification center toggle
+  function toggleNotifications() {
+    const drop = document.getElementById('notifDropdown');
+    drop.classList.toggle('hidden');
+  }
+
+  function clearNotifications() {
+    const badge = document.getElementById('notifBadge');
+    if (badge) badge.style.display = 'none';
+    alert('All notifications marked as read.');
+    toggleNotifications();
+  }
+
+  // Close dropdown on outside click
+  window.addEventListener('click', function(e) {
+    const notifBtn = document.getElementById('notifBtn');
+    const drop = document.getElementById('notifDropdown');
+    if (notifBtn && drop && !notifBtn.contains(e.target) && !drop.contains(e.target)) {
+      drop.classList.add('hidden');
+    }
+  });
+
+  // Global search filtering
+  function handleGlobalSearch(term) {
+    const q = term.toLowerCase().trim();
+    if (!q) return;
+
+    if (q.includes('claim')) {
+      switchView('claims');
+      document.getElementById('claimsSearchInput').value = term;
+      filterClaimsSearch(term);
+    } else if (q.includes('fraud') || q.includes('risk')) {
+      switchView('fraud');
+    } else if (q.includes('upload') || q.includes('data')) {
+      switchView('upload');
+    } else if (q.includes('predict') || q.includes('model')) {
+      switchView('prediction');
+    }
+  }
+
+  // Refresh Dashboard metrics animation
+  function refreshDashboardMetrics() {
+    const icon = document.getElementById('refreshIcon');
+    icon.classList.add('fa-spin');
+    setTimeout(() => {
+      icon.classList.remove('fa-spin');
+      document.getElementById('lastUpdatedTimestamp').innerText = 'Last updated: Just now (' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + ')';
+      
+      // Slight fluctuation to show live responsiveness
+      const kpi = document.getElementById('kpiTotalClaims');
+      if (kpi) kpi.innerText = '1,252';
+      if (trendChartInstance) {
+        trendChartInstance.data.datasets[0].data[6] = 1252;
+        trendChartInstance.update();
+      }
+    }, 700);
+  }
+
+  // Toggle Granularity in Claims Trend Chart
+  function updateTrendGranularity(type) {
+    const buttons = ['monthly', 'weekly', 'quarterly'];
+    buttons.forEach(b => {
+      const btn = document.getElementById('trendBtn-' + b);
+      if (b === type) {
+        btn.className = "px-3 py-1 rounded-lg bg-[#00008b] text-white font-semibold transition shadow-xs";
+      } else {
+        btn.className = "px-3 py-1 rounded-lg text-slate-600 hover:text-slate-900 transition font-medium";
+      }
+    });
+
+    const config = trendDataConfigs[type];
+    if (trendChartInstance && config) {
+      trendChartInstance.data.labels = config.labels;
+      trendChartInstance.data.datasets[0].data = config.data;
+      trendChartInstance.data.datasets[0].label = config.label;
+      trendChartInstance.update();
+
+      document.getElementById('trendSubtitle').innerText = config.subtitle;
+      document.getElementById('trendDatasetLabel').innerText = config.label;
+      document.getElementById('trendChangeMetric').innerText = config.metric;
+    }
+  }
+
+  // Claims Management table filtering
+  function filterClaimsTable(status) {
+    const buttons = document.querySelectorAll('.claims-tab-btn');
+    buttons.forEach(b => {
+      b.classList.remove('bg-[#00008b]', 'text-white');
+      b.classList.add('bg-white/80', 'text-slate-700');
+    });
+    event.target.classList.remove('bg-white/80', 'text-slate-700');
+    event.target.classList.add('bg-[#00008b]', 'text-white');
+
+    const rows = document.querySelectorAll('#claimsTableBody .claim-row');
+    let count = 0;
+    rows.forEach(row => {
+      if (status === 'all' || row.getAttribute('data-status') === status) {
+        row.style.display = '';
+        count++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+    document.getElementById('claimsVisibleCount').innerText = count;
+  }
+
+  function filterClaimsSearch(query) {
+    const q = query.toLowerCase();
+    const rows = document.querySelectorAll('#claimsTableBody .claim-row');
+    let count = 0;
+    rows.forEach(row => {
+      const text = row.innerText.toLowerCase();
+      if (text.includes(q)) {
+        row.style.display = '';
+        count++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+    document.getElementById('claimsVisibleCount').innerText = count;
+  }
+
+  // Claim modal inspector
+  function openClaimModal(id, name, amount, line, status) {
+    document.getElementById('modalClaimIdBadge').innerText = '#' + id;
+    document.getElementById('modalClaimant').innerText = name;
+    document.getElementById('modalAmount').innerText = amount;
+    document.getElementById('modalLine').innerText = line + ' • Incurred Loss';
+    document.getElementById('modalStatusBadge').innerText = status;
+    document.getElementById('claimModal').classList.remove('hidden');
+  }
+
+  function closeClaimModal() {
+    document.getElementById('claimModal').classList.add('hidden');
+  }
+
+  // Fraud detection actions
+  function runFraudScan() {
+    const icon = document.getElementById('radarSpinIcon');
+    icon.classList.add('fa-spin');
+    setTimeout(() => {
+      icon.classList.remove('fa-spin');
+      alert('Forensic AI Scan Complete! 87 active anomalies verified. 0 unflagged high-severity cases detected.');
+    }, 1000);
+  }
+
+  function freezeDisbursement(caseRef) {
+    if (confirm('Confirm freezing payment disbursement for ' + caseRef + '? This action logs an audit entry to the fraud registry.')) {
+      alert('Disbursement frozen for ' + caseRef + '. Claim marked in lockbox.');
+    }
+  }
+
+  // Prediction simulator slider reaction
+  function updatePredictionSim() {
+    const w = parseFloat(document.getElementById('inputWeather').value);
+    const inf = parseFloat(document.getElementById('inputInflation').value);
+    const gro = parseFloat(document.getElementById('inputGrowth').value);
+
+    document.getElementById('valWeather').innerText = w.toFixed(1) + 'x ' + (w > 1.8 ? '(Severe)' : '(Moderate)');
+    document.getElementById('valInflation').innerText = inf.toFixed(1) + '%';
+    document.getElementById('valGrowth').innerText = (gro >= 0 ? '+' : '') + gro + '%';
+
+    // Model dynamic calculation
+    const baseClaims = 1415;
+    const baseLoss = 34.8;
+
+    const projectedFrequency = Math.round(baseClaims * (1 + (gro / 100) * 0.6) * (1 + (w - 1) * 0.15));
+    const projectedLoss = (baseLoss * (1 + (inf / 100)) * (1 + (w - 1) * 0.25) * (1 + (gro / 100) * 0.3)).toFixed(1);
+
+    document.getElementById('simFrequency').innerText = projectedFrequency.toLocaleString();
+    document.getElementById('simIncurredLoss').innerText = '$' + projectedLoss + 'M';
+    document.getElementById('simLossDiff').innerText = '+' + (((projectedLoss - baseLoss) / baseLoss) * 100).toFixed(1) + '% vs Baseline Target';
+  }
+
+  function resetSim() {
+    document.getElementById('inputWeather').value = 1.2;
+    document.getElementById('inputInflation').value = 4.5;
+    document.getElementById('inputGrowth').value = 8;
+    updatePredictionSim();
+  }
+
+  // File upload simulation
+  function handleFileDrop(e) {
+    e.preventDefault();
+    const dt = e.dataTransfer;
+    if (dt.files && dt.files.length) {
+      startSimulatedUpload(dt.files[0].name);
+    }
+  }
+
+  function handleFileSelect(e) {
+    if (e.target.files && e.target.files.length) {
+      startSimulatedUpload(e.target.files[0].name);
+    }
+  }
+
+  function loadSampleDataset() {
+    startSimulatedUpload('sample_actuarial_loss_q3_iso20022.csv');
+  }
+
+  function startSimulatedUpload(fileName) {
+    const container = document.getElementById('uploadProgressContainer');
+    const bar = document.getElementById('uploadProgressBar');
+    const percent = document.getElementById('uploadPercent');
+    const nameLabel = document.getElementById('uploadFileName');
+    const statusText = document.getElementById('uploadStatusText');
+
+    nameLabel.innerText = fileName;
+    container.classList.remove('hidden');
+    bar.style.width = '0%';
+    percent.innerText = '0%';
+
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 20;
+      bar.style.width = progress + '%';
+      percent.innerText = progress + '%';
+      if (progress >= 100) {
+        clearInterval(interval);
+        statusText.innerText = '✓ Dataset successfully parsed and indexed into actuarial engine.';
+        statusText.classList.add('text-emerald-600', 'font-bold');
+        setTimeout(() => {
+          alert('Dataset ' + fileName + ' successfully ingested!');
+        }, 300);
+      }
+    }, 180);
+  }
+
+  // Donut chart interactive filter
+  function filterDistribution(category) {
+    alert('Drilldown filtered for category: ' + category + '. Redirecting to Claims view.');
+    switchView('claims');
+    document.getElementById('claimsSearchInput').value = category;
+    filterClaimsSearch(category);
+  }
+
+  // Download Report Toast
+  function downloadReportModal(reportName = 'Executive Actuarial PDF Summary') {
+    const toast = document.getElementById('reportToast');
+    document.getElementById('reportToastText').innerText = reportName + ' generated and saved to your device.';
+    toast.classList.remove('hidden');
+    setTimeout(() => {
+      toast.classList.add('hidden');
+    }, 3500);
+  }
+
+  // ================================================================
+  // INITIALIZE CHARTS GUARANTEED TO BE VISIBLE & CRISP
+  // ================================================================
+  window.addEventListener('DOMContentLoaded', function() {
+    Chart.defaults.color = '#64748b';
+    Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+
+    // 1. Claims Distribution Chart (Doughnut)
+    const claimsDistCanvas = document.getElementById('claimsDistributionChart');
+    if (claimsDistCanvas) {
+      const claimsDistCtx = claimsDistCanvas.getContext('2d');
+      distChartInstance = new Chart(claimsDistCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Auto', 'Home', 'Health', 'Life', 'Business'],
+          datasets: [{
+            data: [35, 25, 20, 15, 5],
+            backgroundColor: [
+              '#00008b',
+              '#3b82f6',
+              '#10b981',
+              '#f59e0b',
+              '#ef4444'
+            ],
+            borderColor: '#ffffff',
+            borderWidth: 3,
+            hoverOffset: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: '#00008b',
+              titleColor: '#ffffff',
+              bodyColor: '#ffffff',
+              padding: 12,
+              cornerRadius: 10,
+              callbacks: {
+                label: function(context) {
+                  return '  ' + context.label + ': ' + context.parsed + '%';
+                }
+              }
+            }
+          },
+          cutout: '70%'
+        }
+      });
+    }
+
+    // 2. Claims Trend Chart (CRISP, GUARANTEED VISIBLE LINE CHART)
+    const claimsTrendCanvas = document.getElementById('claimsTrendChart');
+    if (claimsTrendCanvas) {
+      const claimsTrendCtx = claimsTrendCanvas.getContext('2d');
+      
+      // Beautiful gradient fill from deep navy #00008b to transparent
+      const trendGradient = claimsTrendCtx.createLinearGradient(0, 0, 0, 270);
+      trendGradient.addColorStop(0, 'rgba(0, 0, 139, 0.22)');
+      trendGradient.addColorStop(0.7, 'rgba(0, 0, 139, 0.04)');
+      trendGradient.addColorStop(1, 'rgba(0, 0, 139, 0.00)');
+
+      trendChartInstance = new Chart(claimsTrendCtx, {
+        type: 'line',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+          datasets: [{
+            label: 'Total Monthly Volume',
+            data: [850, 920, 1020, 1100, 1150, 1200, 1248],
+            borderColor: '#00008b',
+            backgroundColor: trendGradient,
+            fill: true,
+            tension: 0.35,
+            borderWidth: 3.5,
+            pointBackgroundColor: '#00008b',
+            pointBorderColor: '#ffffff',
+            pointBorderWidth: 2.5,
+            pointRadius: 5.5,
+            pointHoverRadius: 8.5,
+            pointHoverBackgroundColor: '#00008b',
+            pointHoverBorderColor: '#ffffff',
+            pointHoverBorderWidth: 3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: '#00008b',
+              titleColor: '#ffffff',
+              bodyColor: '#ffffff',
+              padding: 12,
+              cornerRadius: 10,
+              callbacks: {
+                label: function(context) {
+                  return '  Volume: ' + context.parsed.y + ' claims';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: false,
+              min: 800,
+              max: 1300,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)',
+                drawBorder: false
+              },
+              ticks: {
+                color: '#64748b',
+                font: { size: 11 }
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                color: '#64748b',
+                font: { size: 11, weight: '600' }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // 3. Actual vs Predicted Claims Chart (Grouped Bar Chart)
+    const actPredCanvas = document.getElementById('actualVsPredictedChart');
+    if (actPredCanvas) {
+      const actPredCtx = actPredCanvas.getContext('2d');
+      actPredChartInstance = new Chart(actPredCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+          datasets: [
+            {
+              label: 'Actual Claims',
+              data: [850, 920, 1020, 1100, 1150, 1200, 1248],
+              backgroundColor: '#00008b',
+              borderRadius: 6,
+              borderSkipped: false,
+              barPercentage: 0.6,
+              categoryPercentage: 0.65
+            },
+            {
+              label: 'Predicted Claims',
+              data: [900, 950, 1050, 1120, 1180, 1230, 1290],
+              backgroundColor: '#3b82f6',
+              borderRadius: 6,
+              borderSkipped: false,
+              barPercentage: 0.6,
+              categoryPercentage: 0.65
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: '#00008b',
+              titleColor: '#ffffff',
+              bodyColor: '#ffffff',
+              padding: 12,
+              cornerRadius: 10
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(0, 0, 0, 0.05)',
+                drawBorder: false
+              },
+              ticks: {
+                color: '#64748b',
+                font: { size: 11 }
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                color: '#64748b',
+                font: { size: 11, weight: '500' }
+              }
+            }
+          }
+        }
+      });
+    }
+  });
+</script>
+</body></html>

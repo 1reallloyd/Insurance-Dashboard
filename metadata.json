@@ -1,0 +1,6 @@
+{
+  "name": "Insurance Analytics Pro",
+  "description": "Real-time actuarial loss modeling, automated fraud radar, predictive claims forecasting, and claims adjudication dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
