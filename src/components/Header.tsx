@@ -73,15 +73,15 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-base sm:text-lg font-bold tracking-tight text-[#00008b] leading-none">
+              <span className="text-sm sm:text-base font-bold tracking-tight text-[#00008b] leading-none">
                 Insurance Analytics
               </span>
-              <span className="px-1.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase bg-blue-50/90 text-[#00008b] border border-blue-200/80 rounded-md shadow-xs">
-                Pro v3.2
+              <span className="px-1.5 py-0.5 text-[9.5px] font-semibold tracking-wide uppercase bg-blue-50/90 text-[#00008b] border border-blue-200/80 rounded-md shadow-xs">
+                Pro 2026
               </span>
             </div>
             <p className="text-[10.5px] text-slate-500 font-medium hidden md:block mt-0.5">
-              Real-time Actuarial &amp; Claims Intelligence
+              FY 2026 Real-time Actuarial &amp; Claims Intelligence
             </p>
           </div>
         </div>
@@ -113,7 +113,7 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Live Sync Status Pill */}
         <div className="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 text-[11px] font-semibold backdrop-blur-sm shadow-xs">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Live Sync</span>
+          <span>Live Sync (2026)</span>
         </div>
 
         {/* Notification Bell & Dropdown */}
@@ -134,7 +134,7 @@ export const Header: React.FC<HeaderProps> = ({
           {showNotifications && (
             <div className="absolute right-0 mt-2.5 w-76 sm:w-88 glass-panel rounded-xl p-3.5 shadow-2xl border border-white/90 z-50">
               <div className="flex items-center justify-between pb-2 border-b border-slate-200/80 mb-2.5">
-                <span className="font-bold text-slate-900 text-xs">Actuarial Alerts</span>
+                <span className="font-bold text-slate-900 text-xs">Actuarial Alerts (2026)</span>
                 <button
                   onClick={handleClearNotifications}
                   className="text-[11px] text-[#00008b] font-semibold hover:underline"
@@ -160,7 +160,7 @@ export const Header: React.FC<HeaderProps> = ({
                       3 clustered collision claims from Miami flagged for staged accident analysis.
                     </p>
                     <span className="text-[9.5px] text-slate-400 font-mono mt-1 block">
-                      12 mins ago
+                      12 mins ago · Oct 2026
                     </span>
                   </div>
                 </div>
@@ -175,13 +175,13 @@ export const Header: React.FC<HeaderProps> = ({
                   <Database className="w-4 h-4 text-[#00008b] shrink-0 mt-0.5" />
                   <div>
                     <p className="font-bold text-slate-900 text-[11px]">
-                      Batch Q3 Loss Run Ingested
+                      Batch Q3 2026 Loss Run Ingested
                     </p>
                     <p className="text-slate-600 text-[10.5px] mt-0.5">
-                      Auto &amp; Commercial policy loss triangulations recalculated.
+                      Auto &amp; Commercial policy loss triangulations recalculated for FY 2026.
                     </p>
                     <span className="text-[9.5px] text-slate-400 font-mono mt-1 block">
-                      45 mins ago
+                      45 mins ago · Oct 2026
                     </span>
                   </div>
                 </div>

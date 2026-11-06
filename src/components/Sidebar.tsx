@@ -47,12 +47,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Sidebar Container */}
       <aside
-        className={`glass-panel w-64 border-r border-white/60 transition-transform duration-300 ease-in-out shrink-0 flex flex-col justify-between z-40 fixed lg:static inset-y-0 left-0 ${
+        className={`glass-panel w-56 sm:w-60 border-r border-white/60 transition-transform duration-300 ease-in-out shrink-0 flex flex-col justify-between z-40 fixed lg:static inset-y-0 left-0 ${
           isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         {/* Navigation list */}
-        <nav className="p-3.5 sm:p-4 overflow-y-auto">
+        <nav className="p-2.5 sm:p-3 overflow-y-auto">
           {/* Mobile close button header */}
           <div className="flex items-center justify-between lg:hidden mb-3 pb-2 border-b border-slate-200">
             <span className="text-xs font-bold text-[#00008b] uppercase tracking-wider">

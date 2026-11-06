@@ -60,7 +60,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="flex items-center gap-2 mb-0.5">
             <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/90 shadow-2xs flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              All Engines Operational
+              Python Actuarial Suite: 4/4 Models Active (GH₵)
             </span>
             <span className="text-[10.5px] text-slate-500">
               FY 2026 · Updated {lastRefreshedTime}
@@ -228,7 +228,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <p className="text-[10.5px] text-slate-500">By business line breakdown</p>
             </div>
             <span className="text-[11px] font-mono font-semibold text-[#00008b] bg-blue-50/90 px-1.5 py-0.5 rounded border border-blue-200/80 shadow-2xs">
-              Total: $34.8M
+              Total: GH₵34.8M
             </span>
           </div>
 

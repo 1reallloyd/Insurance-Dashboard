@@ -6,7 +6,10 @@ import {
   CheckCircle,
   AlertCircle,
   FileSpreadsheet,
+  Download,
+  Info,
 } from 'lucide-react';
+import * as XLSX from 'xlsx';
 
 interface UploadViewProps {
   onDatasetUploaded: (fileName: string, recordCount: number) => void;
@@ -18,13 +21,15 @@ export const UploadView: React.FC<UploadViewProps> = ({ onDatasetUploaded }) => 
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedFileName, setUploadedFileName] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
+  const [isDownloadingTemplate, setIsDownloadingTemplate] = useState(false);
+
   const [recentUploads, setRecentUploads] = useState([
     {
       id: '#CLM-98214',
       line: 'Commercial Auto',
-      date: '2023-10-18',
-      amount: '$14,800.00',
-      deductible: '$1,000.00',
+      date: '2026-10-18',
+      amount: 'GH₵14,800.00',
+      deductible: 'GH₵1,000.00',
       telematics: '89 / 100',
       telematicsColor: 'text-emerald-600',
       validation: 'Passed',
@@ -33,9 +38,9 @@ export const UploadView: React.FC<UploadViewProps> = ({ onDatasetUploaded }) => 
     {
       id: '#CLM-98215',
       line: 'Homeowners Fire',
-      date: '2023-10-19',
-      amount: '$82,450.00',
-      deductible: '$2,500.00',
+      date: '2026-10-19',
+      amount: 'GH₵82,450.00',
+      deductible: 'GH₵2,500.00',
       telematics: 'N/A',
       telematicsColor: 'text-slate-400',
       validation: 'Passed',
@@ -44,15 +49,16 @@ export const UploadView: React.FC<UploadViewProps> = ({ onDatasetUploaded }) => 
     {
       id: '#CLM-98216',
       line: 'Personal Auto',
-      date: '2023-10-21',
-      amount: '$6,120.00',
-      deductible: '$500.00',
+      date: '2026-10-21',
+      amount: 'GH₵6,120.00',
+      deductible: 'GH₵500.00',
       telematics: '42 / 100',
       telematicsColor: 'text-amber-600',
       validation: 'Check Telematics',
       validationType: 'warning',
     },
   ]);
+
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -85,8 +91,8 @@ export const UploadView: React.FC<UploadViewProps> = ({ onDatasetUploaded }) => 
             id: `#CLM-${Math.floor(90000 + Math.random() * 9999)}`,
             line: 'Commercial Auto',
             date: new Date().toISOString().split('T')[0],
-            amount: '$22,400.00',
-            deductible: '$2,500.00',
+            amount: 'GH₵22,400.00',
+            deductible: 'GH₵2,500.00',
             telematics: '78 / 100',
             telematicsColor: 'text-emerald-600',
             validation: 'Passed',
@@ -100,6 +106,98 @@ export const UploadView: React.FC<UploadViewProps> = ({ onDatasetUploaded }) => 
         }
       }
     }, 180);
+  };
+
+  const handleDownloadExcelTemplate = async () => {
+    setIsDownloadingTemplate(true);
+    try {
+      // 1. Attempt download from real backend API
+      const response = await fetch('/api/download-template');
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'actuarial_claims_template_ghs.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        setIsDownloadingTemplate(false);
+        return;
+      }
+    } catch (err) {
+      console.warn('Backend download failed, generating client-side Excel workbook:', err);
+    }
+
+    // 2. Client-side XLSX generation fallback (100% resilient)
+    try {
+      const templateData = [
+        {
+          claim_id: 'CLM-2026-001',
+          claimant_name: 'Kwame Mensah',
+          policy_number: 'POL-AUTO-2026-8812',
+          line_of_business: 'Auto Collision',
+          claim_amount_ghs: 18500,
+          deductible_ghs: 1500,
+          incident_date: '2026-10-18',
+          filing_date: '2026-10-19',
+          jurisdiction: 'Greater Accra, Ghana',
+          telematics_score: 72,
+          fraud_risk_score: 22,
+          status: 'Review',
+          assigned_adjuster: 'Emmanuel Addo',
+          incident_description: 'Side-impact bumper contact at interchange during rainy commute.',
+          red_flags: 'None',
+        },
+        {
+          claim_id: 'CLM-2026-002',
+          claimant_name: 'Akosua Boakye Enterprises',
+          policy_number: 'POL-COMM-2026-3391',
+          line_of_business: 'Commercial Fire',
+          claim_amount_ghs: 145000,
+          deductible_ghs: 10000,
+          incident_date: '2026-10-14',
+          filing_date: '2026-10-15',
+          jurisdiction: 'Ashanti Region, Kumasi',
+          telematics_score: 18,
+          fraud_risk_score: 84,
+          status: 'Flagged',
+          assigned_adjuster: 'Amanda Chen',
+          incident_description: 'Warehouse inventory electrical smoke damage after closing hours.',
+          red_flags: 'Accelerant trace flagged',
+        },
+      ];
+
+      const dictionary = [
+        { Column: 'claim_id', Type: 'String (Required)', Description: 'Unique claim ID (e.g., CLM-2026-001)' },
+        { Column: 'claimant_name', Type: 'String (Required)', Description: 'Policyholder / Company legal name' },
+        { Column: 'policy_number', Type: 'String (Required)', Description: 'Policy identification code' },
+        { Column: 'line_of_business', Type: 'String (Required)', Description: 'Auto Collision, Commercial Fire, Health, Home, Life' },
+        { Column: 'claim_amount_ghs', Type: 'Number (Required)', Description: 'Gross claim amount in Ghana Cedis (GH₵)' },
+        { Column: 'deductible_ghs', Type: 'Number (Required)', Description: 'Policy deductible in Ghana Cedis (GH₵)' },
+        { Column: 'incident_date', Type: 'Date (YYYY-MM-DD)', Description: 'Accident occurrence date' },
+        { Column: 'filing_date', Type: 'Date (YYYY-MM-DD)', Description: 'Notice of loss report date' },
+        { Column: 'jurisdiction', Type: 'String', Description: 'Regional district or jurisdiction' },
+        { Column: 'telematics_score', Type: 'Number (0-100)', Description: 'IoT sensor telemetry score' },
+        { Column: 'fraud_risk_score', Type: 'Number (0-100)', Description: 'Computed fraud risk score' },
+        { Column: 'status', Type: 'Enum', Description: 'Approved | Review | Flagged | Frozen' },
+        { Column: 'assigned_adjuster', Type: 'String', Description: 'Senior examiner assigned' },
+        { Column: 'incident_description', Type: 'String', Description: 'Circumstances and loss narrative' },
+        { Column: 'red_flags', Type: 'String', Description: 'Forensic trigger tags' },
+      ];
+
+      const wb = XLSX.utils.book_new();
+      const ws1 = XLSX.utils.json_to_sheet(templateData);
+      const ws2 = XLSX.utils.json_to_sheet(dictionary);
+      XLSX.utils.book_append_sheet(wb, ws1, 'Claims_Template_GH₵');
+      XLSX.utils.book_append_sheet(wb, ws2, 'Data_Dictionary');
+      XLSX.writeFile(wb, 'actuarial_claims_template_ghs.xlsx');
+    } catch (genErr) {
+      console.error('Failed to generate Excel client-side:', genErr);
+    } finally {
+      setIsDownloadingTemplate(false);
+    }
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -141,41 +239,95 @@ export const UploadView: React.FC<UploadViewProps> = ({ onDatasetUploaded }) => 
   };
 
   return (
-    <section className="space-y-4 sm:space-y-6">
-      <div className="glass-card p-4 sm:p-5">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-slate-200/70 pb-3.5">
+    <section className="space-y-2.5 sm:space-y-3">
+      <div className="glass-card p-3 sm:p-3.5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 border-b border-slate-200/70 pb-2.5">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-100/80 text-[#00008b]">
-                Dataset Ingestion Engine
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <span className="text-[9.5px] font-semibold px-2 py-0.5 rounded bg-blue-100/80 text-[#00008b]">
+                Dataset Ingestion Engine 2026
               </span>
-              <span className="text-[10.5px] text-slate-400">Schema: Actuarial ISO 20022</span>
+              <span className="text-[10px] text-slate-400">Schema: Actuarial ISO 20022 • Currency: GH₵</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-[#00008b]">
-              Upload Actuarial Datasets
+            <h2 className="text-base sm:text-lg font-bold text-[#00008b]">
+              Upload Actuarial Datasets (FY 2026)
             </h2>
             <p className="text-slate-600 text-xs mt-0.5">
-              Ingest claims loss runs, exposure matrices, and telematics logs for ML inference.
+              Ingest FY 2026 claims loss runs in Ghana Cedis (GH₵), exposure matrices, and telematics logs.
             </p>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
             <button
+              onClick={handleDownloadExcelTemplate}
+              disabled={isDownloadingTemplate}
+              className="px-3 py-1.5 rounded-lg bg-emerald-700 text-white text-xs font-semibold hover:bg-emerald-800 transition shadow-2xs flex items-center gap-1.5 active:scale-[0.98]"
+              title="Download official Excel workbook template (.xlsx) with all required columns and dictionary"
+            >
+              <Download className={`w-3.5 h-3.5 ${isDownloadingTemplate ? 'animate-bounce' : ''}`} />
+              <span>{isDownloadingTemplate ? 'Downloading...' : 'Download Excel Template (.xlsx)'}</span>
+            </button>
+
+            <button
               onClick={handleRunAIAudit}
               disabled={isAuditing}
-              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#00008b] to-indigo-700 text-white text-xs font-semibold hover:opacity-95 transition shadow-2xs flex items-center gap-1.5 active:scale-[0.98]"
+              className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#00008b] to-indigo-700 text-white text-xs font-semibold hover:opacity-95 transition shadow-2xs flex items-center gap-1.5 active:scale-[0.98]"
             >
               <Sparkles className={`w-3.5 h-3.5 ${isAuditing ? 'animate-spin' : ''}`} />
-              <span>{isAuditing ? 'Auditing Loss Run...' : 'AI Dataset Audit'}</span>
+              <span>{isAuditing ? 'Auditing...' : 'AI Dataset Audit'}</span>
             </button>
 
             <button
               onClick={handleSampleLoad}
-              className="px-3.5 py-1.5 rounded-xl bg-white text-[#00008b] border border-blue-200/90 text-xs font-semibold hover:bg-blue-50 transition shadow-2xs flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-lg bg-white text-[#00008b] border border-blue-200/90 text-xs font-medium hover:bg-blue-50 transition shadow-2xs flex items-center gap-1.5"
             >
               <FileSpreadsheet className="w-3.5 h-3.5 text-blue-600" />
-              <span>Load Q3 Sample Dataset</span>
+              <span>Load Sample Dataset</span>
             </button>
+          </div>
+        </div>
+
+        {/* Excel Template Columns Specification Guide */}
+        <div className="mt-3 p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-xs">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="font-bold text-slate-800 flex items-center gap-1.5 text-[11px]">
+              <Info className="w-3.5 h-3.5 text-[#00008b]" />
+              System Dataset Columns Guide (All Incurred Amounts &amp; Deductibles in Ghana Cedis GH₵)
+            </span>
+            <span className="text-[10px] text-emerald-700 font-semibold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+              15 System Columns
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {[
+              { name: 'claim_id', req: true },
+              { name: 'claimant_name', req: true },
+              { name: 'policy_number', req: true },
+              { name: 'line_of_business', req: true },
+              { name: 'claim_amount_ghs', req: true },
+              { name: 'deductible_ghs', req: true },
+              { name: 'incident_date', req: true },
+              { name: 'filing_date', req: true },
+              { name: 'jurisdiction', req: false },
+              { name: 'telematics_score', req: false },
+              { name: 'fraud_risk_score', req: false },
+              { name: 'status', req: false },
+              { name: 'assigned_adjuster', req: false },
+              { name: 'incident_description', req: false },
+              { name: 'red_flags', req: false },
+            ].map((col) => (
+              <span
+                key={col.name}
+                className={`font-mono text-[10px] px-2 py-0.5 rounded border ${
+                  col.req
+                    ? 'bg-blue-50/80 text-[#00008b] border-blue-200 font-semibold'
+                    : 'bg-white text-slate-600 border-slate-200'
+                }`}
+              >
+                {col.name}
+                {col.req && <span className="text-red-500 ml-0.5">*</span>}
+              </span>
+            ))}
           </div>
         </div>
 
@@ -288,8 +440,8 @@ export const UploadView: React.FC<UploadViewProps> = ({ onDatasetUploaded }) => 
                   <th className="p-2.5 sm:p-3">Claim ID</th>
                   <th className="p-2.5 sm:p-3 font-sans">Line of Business</th>
                   <th className="p-2.5 sm:p-3">Incident Date</th>
-                  <th className="p-2.5 sm:p-3">Incurred Loss</th>
-                  <th className="p-2.5 sm:p-3">Deductible</th>
+                  <th className="p-2.5 sm:p-3">Incurred Loss (GH₵)</th>
+                  <th className="p-2.5 sm:p-3">Deductible (GH₵)</th>
                   <th className="p-2.5 sm:p-3">Telematics Score</th>
                   <th className="p-2.5 sm:p-3">Validation</th>
                 </tr>

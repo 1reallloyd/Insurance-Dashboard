@@ -29,15 +29,15 @@ export const FraudRadarView: React.FC<FraudRadarViewProps> = ({
 
   const sampleFlaggedClaims: ClaimItem[] = [
     {
-      id: 'CA-2023-1245',
+      id: 'CA-2026-1245',
       claimant: 'Marcus Sterling',
       policyNumber: 'POL-COMM-4410',
       line: 'Commercial Fire',
       claimAmount: 185000,
       fraudRiskScore: 92,
       status: 'Flagged',
-      incidentDate: '2023-10-15',
-      filingDate: '2023-10-16',
+      incidentDate: '2026-10-15',
+      filingDate: '2026-10-16',
       description:
         'Vehicle VIN reported in 3 simultaneous collision claims within 48 hours across separate jurisdictions.',
       adjuster: 'Amanda Chen (Special Investigation Unit)',
@@ -54,8 +54,8 @@ export const FraudRadarView: React.FC<FraudRadarViewProps> = ({
       claimAmount: 78400,
       fraudRiskScore: 79,
       status: 'Flagged',
-      incidentDate: '2023-10-14',
-      filingDate: '2023-10-17',
+      incidentDate: '2026-10-14',
+      filingDate: '2026-10-17',
       description:
         'Excessive billing codes for duplicate soft-tissue ultrasound treatments without prior clinical referral.',
       adjuster: 'Amanda Chen (Special Investigation Unit)',
@@ -71,8 +71,8 @@ export const FraudRadarView: React.FC<FraudRadarViewProps> = ({
       claimAmount: 54000,
       fraudRiskScore: 88,
       status: 'Flagged',
-      incidentDate: '2023-10-19',
-      filingDate: '2023-10-20',
+      incidentDate: '2026-10-19',
+      filingDate: '2026-10-20',
       description:
         'Luxury German SUV total loss theft. Transponder ignition key audit indicates vehicle started with registered key while lender repossession threat was active.',
       adjuster: 'Amanda Chen (Special Investigation Unit)',
@@ -100,42 +100,42 @@ export const FraudRadarView: React.FC<FraudRadarViewProps> = ({
   };
 
   return (
-    <section className="space-y-4 sm:space-y-6">
-      <div className="glass-card p-4 sm:p-5">
+    <section className="space-y-2.5 sm:space-y-3">
+      <div className="glass-card p-3 sm:p-3.5">
         {/* Header & Scan Button */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4 sm:mb-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-2.5 mb-3 sm:mb-4">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-[#ef4444]">
-                Neural Syndicate Radar v2
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <span className="px-1.5 py-0.5 rounded text-[9.5px] font-semibold bg-red-100 text-[#ef4444]">
+                Neural Syndicate Radar 2026
               </span>
-              <span className="text-[10.5px] text-slate-400">87 Flagged In Suspense</span>
+              <span className="text-[10px] text-slate-400">87 Flagged In Suspense (FY 2026)</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-[#00008b] tracking-tight">
-              AI Fraud Detection &amp; Forensic Audit
+            <h2 className="text-base sm:text-lg font-bold text-[#00008b] tracking-tight">
+              AI Fraud Detection &amp; Forensic Audit (FY 2026)
             </h2>
-            <p className="text-slate-600 text-xs sm:text-sm">
-              Automated pattern matching, duplicate collision rings, and ghost clinic detection.
+            <p className="text-slate-600 text-xs">
+              Automated pattern matching, duplicate collision rings, and ghost clinic detection for 2026 claims.
             </p>
           </div>
 
           <button
             onClick={handleRunScan}
             disabled={isScanning}
-            className="px-3.5 py-2 rounded-xl bg-[#ef4444] hover:bg-red-700 text-white text-xs font-bold shadow-sm shadow-red-500/20 flex items-center gap-2 transition self-start md:self-auto active:scale-[0.98]"
+            className="px-3 py-1.5 rounded-lg bg-[#ef4444] hover:bg-red-700 text-white text-xs font-semibold shadow-xs flex items-center gap-1.5 transition self-start md:self-auto active:scale-[0.98]"
           >
-            <Radar className={`w-4 h-4 ${isScanning ? 'animate-spin' : ''}`} />
-            <span>{isScanning ? 'Scanning Actuarial Ledger...' : 'Run Full Forensic Scan'}</span>
+            <Radar className={`w-3.5 h-3.5 ${isScanning ? 'animate-spin' : ''}`} />
+            <span>{isScanning ? 'Scanning 2026 Ledger...' : 'Run Full Forensic Scan'}</span>
           </button>
         </div>
 
         {/* Scan Results Banner (if available) */}
         {scanResult && (
-          <div className="mb-4 p-3.5 rounded-xl bg-gradient-to-br from-blue-50/90 to-indigo-50/70 border border-blue-200 text-xs text-slate-800 animate-in fade-in duration-300">
-            <div className="flex items-center justify-between font-bold text-[#00008b] mb-1.5 flex-wrap gap-1">
-              <span className="flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-[#00008b]" />
-                AI Syndicate &amp; Forensic Audit Completed
+          <div className="mb-3 p-3 rounded-lg bg-gradient-to-br from-blue-50/90 to-indigo-50/70 border border-blue-200 text-xs text-slate-800 animate-in fade-in duration-200">
+            <div className="flex items-center justify-between font-semibold text-[#00008b] mb-1 flex-wrap gap-1">
+              <span className="flex items-center gap-1.5 text-xs">
+                <Sparkles className="w-3.5 h-3.5 text-[#00008b]" />
+                AI Syndicate &amp; Forensic Audit Completed (FY 2026)
               </span>
               <div className="flex items-center gap-2">
                 <span className="text-[9.5px] font-mono px-1.5 py-0.5 rounded bg-blue-100 text-[#00008b] border border-blue-200">
@@ -146,31 +146,31 @@ export const FraudRadarView: React.FC<FraudRadarViewProps> = ({
                 </span>
               </div>
             </div>
-            <div className="text-slate-700 text-[11.5px] whitespace-pre-line leading-relaxed space-y-1.5 max-h-48 overflow-y-auto pr-1">
+            <div className="text-slate-700 text-[11px] whitespace-pre-line leading-relaxed space-y-1 max-h-48 overflow-y-auto pr-1">
               {scanResult.summary}
             </div>
           </div>
         )}
 
-        {/* 3 Fraud Metric Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
-          <div className="p-3.5 rounded-xl bg-red-50/80 border border-red-200/90">
-            <span className="text-[10px] text-red-600 font-bold uppercase tracking-wider">
-              Loss Prevention Prevented
+        {/* 3 Fraud Metric Cards with balanced sizing */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 mb-4">
+          <div className="p-3 rounded-lg bg-red-50/80 border border-red-200/90">
+            <span className="text-[10px] text-red-600 font-semibold uppercase tracking-wider">
+              Loss Prevention Prevented (2026)
             </span>
-            <div className="text-xl sm:text-2xl font-extrabold text-[#ef4444] mt-0.5 tabular-nums">
-              $1,482,900
+            <div className="text-base sm:text-lg font-bold text-[#ef4444] mt-0.5 tabular-nums">
+              GH₵1,482,900
             </div>
             <p className="text-[10.5px] text-slate-600 mt-0.5">
-              Saved across 87 intercepted false claims this month.
+              Saved across 87 intercepted false claims in FY 2026.
             </p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-purple-50/80 border border-purple-200/90">
-            <span className="text-[10px] text-[#a855f7] font-bold uppercase tracking-wider">
-              Organized Syndicate Rings
+          <div className="p-3 rounded-lg bg-purple-50/80 border border-purple-200/90">
+            <span className="text-[10px] text-[#a855f7] font-semibold uppercase tracking-wider">
+              Syndicate Rings (2026)
             </span>
-            <div className="text-xl sm:text-2xl font-extrabold text-[#a855f7] mt-0.5 tabular-nums">
+            <div className="text-base sm:text-lg font-bold text-[#a855f7] mt-0.5 tabular-nums">
               3 Rings Identified
             </div>
             <p className="text-[10.5px] text-slate-600 mt-0.5">
@@ -178,11 +178,11 @@ export const FraudRadarView: React.FC<FraudRadarViewProps> = ({
             </p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-blue-50/80 border border-blue-200/90">
-            <span className="text-[10px] text-[#00008b] font-bold uppercase tracking-wider">
-              False Positive Rate
+          <div className="p-3 rounded-lg bg-blue-50/80 border border-blue-200/90">
+            <span className="text-[10px] text-[#00008b] font-semibold uppercase tracking-wider">
+              False Positive Rate (FY 2026)
             </span>
-            <div className="text-xl sm:text-2xl font-extrabold text-[#00008b] mt-0.5 tabular-nums">
+            <div className="text-base sm:text-lg font-bold text-[#00008b] mt-0.5 tabular-nums">
               0.42%
             </div>
             <p className="text-[10.5px] text-slate-600 mt-0.5">
@@ -192,7 +192,7 @@ export const FraudRadarView: React.FC<FraudRadarViewProps> = ({
         </div>
 
         {/* Priority Interception Queue */}
-        <h4 className="text-xs font-bold text-[#00008b] uppercase tracking-wider mb-2.5">
+        <h4 className="text-[11px] font-semibold text-[#00008b] uppercase tracking-wider mb-2">
           Priority Interception Queue
         </h4>
 

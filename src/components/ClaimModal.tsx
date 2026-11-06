@@ -99,36 +99,39 @@ export const ClaimModal: React.FC<ClaimModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="glass-panel w-full max-w-lg rounded-2xl p-4 sm:p-6 shadow-2xl border border-white/90 relative max-h-[90vh] overflow-y-auto">
+      <div className="glass-panel w-full max-w-lg rounded-xl p-3.5 sm:p-5 shadow-xl border border-white/90 relative max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-3.5 right-3.5 text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition"
+          className="absolute top-3 right-3 text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 transition"
           aria-label="Close dialog"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
         {/* Claim Badges */}
-        <div className="flex items-center gap-2 mb-2">
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-blue-100 text-[#00008b]">
+        <div className="flex items-center gap-1.5 mb-1.5">
+          <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-blue-100 text-[#00008b]">
             #{claim.id}
           </span>
           <span
-            className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${getStatusStyle(
+            className={`px-2 py-0.5 rounded text-[10.5px] font-semibold border ${getStatusStyle(
               claim.status
             )}`}
           >
             {claim.status}
           </span>
+          <span className="text-[10px] text-slate-400 font-mono">
+            FY 2026 Incurred Loss
+          </span>
         </div>
 
         {/* Title */}
-        <h3 className="text-lg sm:text-xl font-bold text-slate-900 leading-snug">
+        <h3 className="text-base font-bold text-slate-900 leading-snug">
           {claim.claimant}
         </h3>
-        <p className="text-xs text-slate-500 mb-3">
-          {claim.line} • Incurred Loss Notice • Policy #{claim.policyNumber}
+        <p className="text-xs text-slate-500 mb-2.5">
+          {claim.line} • Incident Year {claim.incidentDate.slice(0, 4)} • Policy #{claim.policyNumber}
         </p>
 
         {/* Tab switch between Details, AI Forensic Analysis, and Copilot Q&A */}
@@ -177,7 +180,14 @@ export const ClaimModal: React.FC<ClaimModalProps> = ({
             <div className="flex justify-between items-center py-1 border-b border-slate-100">
               <span className="text-slate-500">Claim Amount:</span>
               <span className="font-bold font-mono text-slate-900 text-sm">
-                ${claim.claimAmount.toLocaleString()}
+                GH₵{claim.claimAmount.toLocaleString()}
+              </span>
+            </div>
+
+            <div className="flex justify-between items-center py-1 border-b border-slate-100">
+              <span className="text-slate-500">Deductible:</span>
+              <span className="font-mono text-slate-800 font-semibold">
+                GH₵{(claim.deductible || 1000).toLocaleString()}
               </span>
             </div>
 

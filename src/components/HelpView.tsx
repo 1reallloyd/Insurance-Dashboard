@@ -56,14 +56,14 @@ export const HelpView: React.FC<HelpViewProps> = ({ onTicketSubmitted }) => {
   };
 
   return (
-    <section className="space-y-4 sm:space-y-6">
-      <div className="glass-card p-4 sm:p-5">
-        <div className="border-b border-slate-200/70 pb-3 mb-4 sm:mb-5">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#00008b]">
-            Help, Documentation &amp; Actuarial Knowledge Base
+    <section className="space-y-2.5 sm:space-y-3">
+      <div className="glass-card p-3 sm:p-3.5">
+        <div className="border-b border-slate-200/70 pb-2.5 mb-3 sm:mb-4">
+          <h2 className="text-base sm:text-lg font-bold text-[#00008b]">
+            Help, Documentation &amp; Actuarial Knowledge Base (FY 2026)
           </h2>
-          <p className="text-slate-600 text-xs sm:text-sm mt-0.5">
-            Find answers on reserve calculation algorithms, ISO standards, and platform usage.
+          <p className="text-slate-600 text-xs mt-0.5">
+            Find answers on reserve calculation algorithms, ISO standards, and platform usage for FY 2026.
           </p>
         </div>
 

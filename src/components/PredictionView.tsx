@@ -23,10 +23,10 @@ export const PredictionView: React.FC<PredictionViewProps> = ({ onExportORSA }) 
 
   const [simResult, setSimResult] = useState<SimulationResult['results']>({
     projectedFrequency: 1415,
-    simulatedLossIncurred: '$37.2M',
+    simulatedLossIncurred: 'GH₵37.2M',
     simulatedLossNumber: 37.2,
     lossDiffPercentage: '+6.9% vs Baseline Target',
-    recommendedBuffer: '$41.5M in liquid reinsurance retention',
+    recommendedBuffer: 'GH₵41.5M in liquid reinsurance retention',
     solvencyRating: 'Solvent & Stable',
   });
 
@@ -65,10 +65,10 @@ export const PredictionView: React.FC<PredictionViewProps> = ({ onExportORSA }) 
         const diff = (((projLoss - baseLoss) / baseLoss) * 100).toFixed(1);
         setSimResult({
           projectedFrequency: projFreq,
-          simulatedLossIncurred: `$${projLoss}M`,
+          simulatedLossIncurred: `GH₵${projLoss}M`,
           simulatedLossNumber: projLoss,
           lossDiffPercentage: `+${diff}% vs Baseline Target`,
-          recommendedBuffer: `$${(projLoss * 1.12).toFixed(1)}M in liquid reinsurance retention`,
+          recommendedBuffer: `GH₵${(projLoss * 1.12).toFixed(1)}M in liquid reinsurance retention`,
           solvencyRating: projLoss > 42 ? 'Moderate Stress' : 'Solvent & Stable',
         });
       }
@@ -112,23 +112,22 @@ export const PredictionView: React.FC<PredictionViewProps> = ({ onExportORSA }) 
   };
 
   return (
-    <section className="space-y-4 sm:space-y-6">
-      <div className="glass-card p-4 sm:p-5">
-        <div className="border-b border-slate-200/70 pb-3 mb-4 sm:mb-5">
+    <section className="space-y-2.5 sm:space-y-3">
+      <div className="glass-card p-3 sm:p-3.5">
+        <div className="border-b border-slate-200/70 pb-2.5 mb-3 sm:mb-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-[#00008b]">
-                Actuarial Loss Forecaster &amp; Scenario Simulator
+              <h2 className="text-base sm:text-lg font-bold text-[#00008b]">
+                Actuarial Loss Forecaster &amp; Scenario Simulator (FY 2026 – 2027)
               </h2>
-              <p className="text-slate-600 text-xs sm:text-sm mt-0.5">
-                Simulate next month loss reserves under varying macro-economic and meteorological stress
-                conditions.
+              <p className="text-slate-600 text-xs mt-0.5">
+                Simulate loss reserves under varying macro-economic and catastrophe stress conditions for FY 2026 / 2027.
               </p>
             </div>
             <button
               onClick={handleGenerateAINarrative}
               disabled={isGeneratingNarrative}
-              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#00008b] to-blue-700 text-white text-xs font-semibold hover:opacity-95 transition shadow-2xs flex items-center gap-1.5 self-start sm:self-auto active:scale-[0.98]"
+              className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[#00008b] to-blue-700 text-white text-xs font-semibold hover:opacity-95 transition shadow-2xs flex items-center gap-1.5 self-start sm:self-auto active:scale-[0.98]"
             >
               <Sparkles className={`w-3.5 h-3.5 ${isGeneratingNarrative ? 'animate-spin' : ''}`} />
               <span>{isGeneratingNarrative ? 'Evaluating Models...' : 'AI Stress Assessment'}</span>
@@ -136,11 +135,11 @@ export const PredictionView: React.FC<PredictionViewProps> = ({ onExportORSA }) 
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
           {/* Controls / Sliders (Left) */}
-          <div className="lg:col-span-5 space-y-4 bg-white/60 p-4 sm:p-5 rounded-xl border border-white/90">
-            <h4 className="text-xs font-bold text-[#00008b] uppercase tracking-wider">
-              Actuarial Stress Parameters
+          <div className="lg:col-span-5 space-y-3 bg-white/60 p-3 sm:p-3.5 rounded-lg border border-slate-200/80">
+            <h4 className="text-[11px] font-semibold text-[#00008b] uppercase tracking-wider">
+              Actuarial Stress Parameters (2026 Base)
             </h4>
 
             {/* Slider 1: Weather Catastrophe */}
@@ -165,7 +164,7 @@ export const PredictionView: React.FC<PredictionViewProps> = ({ onExportORSA }) 
               />
               <div className="flex justify-between text-[10px] text-slate-400 mt-0.5">
                 <span>0.5x (Calm)</span>
-                <span>1.2x (Baseline)</span>
+                <span>1.2x (2026 Baseline)</span>
                 <span>3.0x (Catastrophic)</span>
               </div>
             </div>
@@ -192,8 +191,8 @@ export const PredictionView: React.FC<PredictionViewProps> = ({ onExportORSA }) 
               />
               <div className="flex justify-between text-[10px] text-slate-400 mt-0.5">
                 <span>1.0% (Deflationary)</span>
-                <span>4.5% (Expected)</span>
-                <span>15.0% (Hyperinflation)</span>
+                <span>4.5% (2026 Target)</span>
+                <span>15.0% (Stress)</span>
               </div>
             </div>
 
@@ -220,7 +219,7 @@ export const PredictionView: React.FC<PredictionViewProps> = ({ onExportORSA }) 
               />
               <div className="flex justify-between text-[10px] text-slate-400 mt-0.5">
                 <span>-10% (Run-off)</span>
-                <span>+8% (Target)</span>
+                <span>+8% (2026 Target)</span>
                 <span>+30% (Aggressive)</span>
               </div>
             </div>
@@ -228,38 +227,38 @@ export const PredictionView: React.FC<PredictionViewProps> = ({ onExportORSA }) 
             <div className="pt-2 border-t border-slate-200/80">
               <button
                 onClick={handleResetDefaults}
-                className="w-full py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition flex items-center justify-center gap-1.5"
+                className="w-full py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium transition flex items-center justify-center gap-1.5"
               >
                 <RefreshCw className="w-3 h-3 text-slate-500" />
-                <span>Reset Simulation Defaults</span>
+                <span>Reset 2026 Baseline Defaults</span>
               </button>
             </div>
           </div>
 
           {/* Simulated Projections Output (Right) */}
-          <div className="lg:col-span-7 flex flex-col justify-between space-y-3.5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="glass-panel p-3.5 rounded-xl">
-                <span className="text-[11px] text-slate-500 font-semibold block">
-                  Simulated Loss Incurred
+          <div className="lg:col-span-7 flex flex-col justify-between space-y-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="glass-panel p-3 rounded-lg border border-slate-200/70">
+                <span className="text-[10.5px] text-slate-500 font-medium block">
+                  Simulated Loss Incurred (2026/2027)
                 </span>
-                <div className="text-2xl sm:text-3xl font-extrabold text-[#00008b] mt-0.5 tabular-nums">
+                <div className="text-base sm:text-lg font-bold text-[#00008b] mt-0.5 tabular-nums">
                   {simResult.simulatedLossIncurred}
                 </div>
-                <span className="text-[10.5px] text-emerald-600 font-bold block mt-0.5">
+                <span className="text-[10px] text-emerald-600 font-semibold block mt-0.5">
                   {simResult.lossDiffPercentage}
                 </span>
               </div>
 
-              <div className="glass-panel p-3.5 rounded-xl">
-                <span className="text-[11px] text-slate-500 font-semibold block">
+              <div className="glass-panel p-3 rounded-lg border border-slate-200/70">
+                <span className="text-[10.5px] text-slate-500 font-medium block">
                   Projected Claim Frequency
                 </span>
-                <div className="text-2xl sm:text-3xl font-extrabold text-[#00008b] mt-0.5 tabular-nums">
+                <div className="text-base sm:text-lg font-bold text-[#00008b] mt-0.5 tabular-nums">
                   {simResult.projectedFrequency.toLocaleString()}
                 </div>
-                <span className="text-[10.5px] text-slate-500 block mt-0.5">
-                  Expected next month intake
+                <span className="text-[10px] text-slate-500 block mt-0.5">
+                  Expected Nov 2026 intake
                 </span>
               </div>
             </div>

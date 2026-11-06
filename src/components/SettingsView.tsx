@@ -56,14 +56,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onSettingsSaved }) =
   };
 
   return (
-    <section className="space-y-4 sm:space-y-6">
-      <div className="glass-card p-4 sm:p-5">
-        <div className="border-b border-slate-200/70 pb-3 mb-4 sm:mb-5">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#00008b]">
-            System Configuration &amp; Actuarial Engine
+    <section className="space-y-2.5 sm:space-y-3">
+      <div className="glass-card p-3 sm:p-3.5">
+        <div className="border-b border-slate-200/70 pb-2.5 mb-3 sm:mb-4">
+          <h2 className="text-base sm:text-lg font-bold text-[#00008b]">
+            System Configuration &amp; Actuarial Engine (FY 2026)
           </h2>
-          <p className="text-slate-600 text-xs sm:text-sm mt-0.5">
-            Configure threshold sensitivity, telematics streaming, and mathematical triangulation methods.
+          <p className="text-slate-600 text-xs mt-0.5">
+            Configure threshold sensitivity, telematics streaming, and mathematical triangulation methods for FY 2026.
           </p>
         </div>
 
@@ -148,6 +148,69 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onSettingsSaved }) =
               <option value="15%">15% (Recommended)</option>
               <option value="20%">20% (Conservative)</option>
             </select>
+          </div>
+
+          {/* Python Actuarial Models Live Status Panel */}
+          <div className="p-3.5 rounded-xl bg-gradient-to-br from-blue-50/90 to-indigo-50/70 border border-blue-200">
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-bold text-[#00008b] text-xs flex items-center gap-1.5">
+                <Sliders className="w-3.5 h-3.5 text-[#00008b]" />
+                Python Actuarial Engine Status (4/4 Operational)
+              </span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                All Python Models Online (GH₵)
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div className="p-2.5 rounded-lg bg-white/90 border border-blue-100">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-slate-900 text-[11px]">1. Mack Chain-Ladder</span>
+                  <span className="text-[9.5px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                    ACTIVE
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-500 mt-0.5">
+                  Age-to-age factors ($f_k$) &amp; IBNR reserves in GH₵.
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-white/90 border border-blue-100">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-slate-900 text-[11px]">2. Bornhuetter-Ferguson</span>
+                  <span className="text-[9.5px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                    ACTIVE
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-500 mt-0.5">
+                  Credibility weighting for catastrophe lines in GH₵.
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-white/90 border border-blue-100">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-slate-900 text-[11px]">3. Forensic Telematics Radar</span>
+                  <span className="text-[9.5px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                    ACTIVE
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-500 mt-0.5">
+                  Statistical anomaly scoring &amp; blackbox delta (0–100%).
+                </p>
+              </div>
+
+              <div className="p-2.5 rounded-lg bg-white/90 border border-blue-100">
+                <div className="flex justify-between items-center">
+                  <span className="font-bold text-slate-900 text-[11px]">4. Poisson-Gamma Solvency</span>
+                  <span className="text-[9.5px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                    ACTIVE
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-500 mt-0.5">
+                  5,000-path Monte Carlo Solvency II 99.5% VaR &amp; SCR.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="pt-3 flex gap-2.5">
